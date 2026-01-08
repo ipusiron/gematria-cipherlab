@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Gematria CipherLab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-top">
+      <h1>Gematria CipherLab</h1>
+      <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Switch language">
+        <span class="lang-en">EN</span>
+        <span class="lang-ja active">JA</span>
+      </button>
+    </div>
+    <p class="header-desc" data-i18n="header.desc">複数のゲマトリア方式に対応した計算ツール。トークン分析とステップごとのトレース表示機能付き。</p>
+  </header>
+
+  <main class="container">
+    <!-- Tab Navigation -->
+    <nav class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="simple" data-i18n="tab.simple">Simple</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="agrippa" data-i18n="tab.agrippa">Agrippa</button>
+    </nav>
+
+    <!-- Simple Tab Content -->
+    <section class="tab-content active" id="tab-simple" role="tabpanel">
+      <div class="scheme-selector">
+        <label for="simple-scheme" data-i18n="scheme.label">方式:</label>
+        <select id="simple-scheme">
+          <option value="simple-english-0" data-i18n="scheme.simpleEnglish0">Simple English A=0 (A=0, B=1, ...Z=25)</option>
+          <option value="simple-english" data-i18n="scheme.simpleEnglish">Simple English A=1 (A=1, B=2, ...Z=26)</option>
+          <option value="simple-latin23" data-i18n="scheme.simpleLatin23">Simple Latin23 (I/J, U/V 統合)</option>
+        </select>
+        <button class="info-btn" type="button" aria-label="方式の説明" data-info="simple">ⓘ</button>
+      </div>
+      <div class="scheme-note" id="simple-scheme-note"></div>
+    </section>
+
+    <!-- Agrippa Tab Content -->
+    <section class="tab-content" id="tab-agrippa" role="tabpanel" hidden>
+      <div class="scheme-selector">
+        <label for="agrippa-scheme" data-i18n="scheme.label">方式:</label>
+        <select id="agrippa-scheme">
+          <option value="agrippa-23" data-i18n="scheme.agrippa23">Agrippa 23 (古典ラテン語)</option>
+          <option value="agrippa-27" data-i18n="scheme.agrippa27">Agrippa 27 (HI, HV拡張)</option>
+        </select>
+        <button class="info-btn" type="button" aria-label="方式の説明" data-info="agrippa">ⓘ</button>
+      </div>
+      <div class="scheme-note" id="agrippa-scheme-note"></div>
+    </section>
+
+    <!-- Input Area -->
+    <section class="input-section">
+      <div class="input-header">
+        <label for="input-text" data-i18n="input.label">入力テキスト:</label>
+        <select id="preset-select">
+          <option value="" data-i18n="input.presetDefault">-- プリセット例 --</option>
+        </select>
+      </div>
+      <textarea id="input-text" rows="3" maxlength="10000" data-i18n-placeholder="input.placeholder"></textarea>
+      <button id="calculate-btn" class="btn-primary" data-i18n="input.calculate">計算</button>
+    </section>
+
+    <!-- Warnings -->
+    <section class="warnings-section" id="warnings-section" hidden>
+      <h2 data-i18n="warnings.title">警告</h2>
+      <ul id="warnings-list"></ul>
+    </section>
+
+    <!-- Results -->
+    <section class="results-section" id="results-section" hidden>
+      <h2 data-i18n="results.title">計算トレース</h2>
+
+      <!-- Step 1: Tokenization -->
+      <div class="trace-step">
+        <h3 data-i18n="results.step1">Step 1: トークン化</h3>
+        <div class="token-display" id="token-display"></div>
+        <div class="token-legend">
+          <span class="legend-item"><span class="token-sample included"></span> <span data-i18n="legend.included">計算対象</span></span>
+          <span class="legend-item"><span class="token-sample excluded"></span> <span data-i18n="legend.excluded">除外</span></span>
+          <span class="legend-item"><span class="token-sample normalized"></span> <span data-i18n="legend.normalized">正規化</span></span>
+        </div>
+      </div>
+
+      <!-- Step 2: Mapping -->
+      <div class="trace-step">
+        <h3 data-i18n="results.step2">Step 2: 数値割当</h3>
+        <div class="mapping-display" id="mapping-display"></div>
+      </div>
+
+      <!-- Step 3: Summation -->
+      <div class="trace-step">
+        <h3 data-i18n="results.step3">Step 3: 合計計算</h3>
+        <div class="summation-display" id="summation-display"></div>
+        <div class="total-display" id="total-display"></div>
+        <div class="excluded-list" id="excluded-list"></div>
+      </div>
+    </section>
+
+    <!-- Reference Table -->
+    <section class="reference-section">
+      <h2 data-i18n="reference.title">参照テーブル</h2>
+      <div class="reference-table-wrapper">
+        <table class="reference-table" id="reference-table">
+          <thead>
+            <tr>
+              <th data-i18n="reference.token">トークン</th>
+              <th data-i18n="reference.value">数値</th>
+            </tr>
+          </thead>
+          <tbody id="reference-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer">
+      🔗 GitHubリポジトリはこちら（
+      <a href="https://github.com/ipusiron/gematria-cipherlab" target="_blank" rel="noopener noreferrer">
+        ipusiron/gematria-cipherlab
+      </a>
+      ）
+    </div>
+  </footer>
+
+  <!-- Info Modal -->
+  <dialog class="info-modal" id="info-modal">
+    <div class="modal-content">
+      <h3 id="modal-title"></h3>
+      <div id="modal-body"></div>
+      <button class="btn-secondary" id="modal-close" data-i18n="modal.close">閉じる</button>
+    </div>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
