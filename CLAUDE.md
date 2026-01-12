@@ -8,10 +8,13 @@ Gematria CipherLab is an educational gematria calculator supporting multiple cip
 
 ## Supported Gematria Schemes
 
-- **Simple English**: A-Z, single character tokens, A=1
+- **Simple English A=0**: A-Z, single character tokens, A=0
+- **Simple English A=1**: A-Z, single character tokens, A=1
+- **English Gematria**: A-Z, single character tokens, A=6 (multiples of 6)
 - **Simple Latin23**: I/J merged, U/V merged, single character tokens
 - **Agrippa 23**: Single character tokens, J→I, U→V, W is undefined (excluded with warning)
 - **Agrippa 27**: Single + multi-character tokens (HI, HV), longest-match tokenization, W treated as HV
+- **Hebrew Gematria**: Hebrew letters א-ת, values 1-400, includes final forms
 
 ## Core Architecture
 
@@ -28,7 +31,7 @@ Gematria CipherLab is an educational gematria calculator supporting multiple cip
 
 ### UI Structure (per ui_spec.md)
 - Header with tool name
-- Tab bar: Simple / Agrippa
+- Tab bar: English / Agrippa / Hebrew
 - Main area: Input, settings, results
 - Footer: GitHub link
 

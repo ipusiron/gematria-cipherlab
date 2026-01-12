@@ -23,17 +23,54 @@
   <main class="container">
     <!-- Tab Navigation -->
     <nav class="tab-bar" role="tablist">
-      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="simple" data-i18n="tab.simple">Simple</button>
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="basics" data-i18n="tab.basics">基礎</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="simple" data-i18n="tab.simple">English</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="agrippa" data-i18n="tab.agrippa">Agrippa</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="hebrew" data-i18n="tab.hebrew">Hebrew</button>
     </nav>
 
+    <!-- Basics Tab Content -->
+    <section class="tab-content active" id="tab-basics" role="tabpanel">
+      <div class="basics-content">
+        <h3 data-i18n="basics.whatIs">ゲマトリアとは？</h3>
+        <p data-i18n="basics.whatIsDesc">ゲマトリアは、文字に数値を割り当て、言葉や名前の数値的意味を解釈する手法です。単なる「数を表記する方法」ではなく、言葉に隠された意味を数値から読み解く解釈の手法です。</p>
+
+        <h3 data-i18n="basics.origins">起源</h3>
+        <p data-i18n="basics.originsDesc">元来はヘブライ語の神秘主義的・カバラ的な実践でしたが、ギリシャ（イソプセフィア）でも同様のシステムが発展し、現在では英語など他の言語にも拡張されています。</p>
+
+        <h3 data-i18n="basics.howToUse">このツールの使い方</h3>
+        <ol class="basics-steps">
+          <li data-i18n="basics.step1">上のタブから計算したい方式を選択</li>
+          <li data-i18n="basics.step2">入力欄にテキストを入力（またはプリセットを選択）</li>
+          <li data-i18n="basics.step3">「計算」ボタンを押すと、トークン化→数値割当→合計の3ステップで結果を表示</li>
+        </ol>
+
+        <h3 data-i18n="basics.schemes">対応方式</h3>
+        <div class="basics-schemes">
+          <div class="scheme-card">
+            <h4>English</h4>
+            <p data-i18n="basics.englishDesc">英語アルファベット(A-Z)を使用。Simple(A=1)、Zero-indexed(A=0)、6の倍数方式など。</p>
+          </div>
+          <div class="scheme-card">
+            <h4>Agrippa</h4>
+            <p data-i18n="basics.agrippaDesc">16世紀のアグリッパによる古典ラテン語ゲマトリア。ヘブライ数値体系を使用。</p>
+          </div>
+          <div class="scheme-card">
+            <h4>Hebrew</h4>
+            <p data-i18n="basics.hebrewDesc">本来のゲマトリア。ヘブライ文字22文字を1〜400の数値に対応。オンスクリーンキーボード付き。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Simple Tab Content -->
-    <section class="tab-content active" id="tab-simple" role="tabpanel">
+    <section class="tab-content" id="tab-simple" role="tabpanel" hidden>
       <div class="scheme-selector">
         <label for="simple-scheme" data-i18n="scheme.label">方式:</label>
         <select id="simple-scheme">
           <option value="simple-english-0" data-i18n="scheme.simpleEnglish0">Simple English A=0 (A=0, B=1, ...Z=25)</option>
           <option value="simple-english" data-i18n="scheme.simpleEnglish">Simple English A=1 (A=1, B=2, ...Z=26)</option>
+          <option value="english-gematria" data-i18n="scheme.englishGematria">English Gematria (A=6, B=12, ...Z=156)</option>
           <option value="simple-latin23" data-i18n="scheme.simpleLatin23">Simple Latin23 (I/J, U/V 統合)</option>
         </select>
         <button class="info-btn" type="button" aria-label="方式の説明" data-info="simple">ⓘ</button>
@@ -54,8 +91,18 @@
       <div class="scheme-note" id="agrippa-scheme-note"></div>
     </section>
 
+    <!-- Hebrew Tab Content -->
+    <section class="tab-content" id="tab-hebrew" role="tabpanel" hidden>
+      <div class="scheme-selector">
+        <label data-i18n="scheme.label">方式:</label>
+        <span class="scheme-name" data-i18n="scheme.hebrewGematria">Hebrew Gematria (א=1, ב=2, ...)</span>
+        <button class="info-btn" type="button" aria-label="方式の説明" data-info="hebrew">ⓘ</button>
+      </div>
+      <div class="scheme-note" id="hebrew-scheme-note"></div>
+    </section>
+
     <!-- Input Area -->
-    <section class="input-section">
+    <section class="input-section" hidden>
       <div class="input-header">
         <label for="input-text" data-i18n="input.label">入力テキスト:</label>
         <select id="preset-select">
@@ -63,6 +110,60 @@
         </select>
       </div>
       <textarea id="input-text" rows="3" maxlength="10000" data-i18n-placeholder="input.placeholder"></textarea>
+
+      <!-- Hebrew Keyboard (shown only for Hebrew tab) -->
+      <div class="hebrew-keyboard" id="hebrew-keyboard" hidden>
+        <p class="keyboard-label" data-i18n="hebrew.keyboardLabel">ヘブライ文字入力:</p>
+
+        <!-- Units (1-9) -->
+        <div class="hebrew-key-group">
+          <span class="group-label" data-i18n="hebrew.units">1の位 (1-9)</span>
+          <div class="hebrew-keys">
+            <button type="button" class="hebrew-key" data-char="א" data-value="1">א<span>1</span></button>
+            <button type="button" class="hebrew-key" data-char="ב" data-value="2">ב<span>2</span></button>
+            <button type="button" class="hebrew-key" data-char="ג" data-value="3">ג<span>3</span></button>
+            <button type="button" class="hebrew-key" data-char="ד" data-value="4">ד<span>4</span></button>
+            <button type="button" class="hebrew-key" data-char="ה" data-value="5">ה<span>5</span></button>
+            <button type="button" class="hebrew-key" data-char="ו" data-value="6">ו<span>6</span></button>
+            <button type="button" class="hebrew-key" data-char="ז" data-value="7">ז<span>7</span></button>
+            <button type="button" class="hebrew-key" data-char="ח" data-value="8">ח<span>8</span></button>
+            <button type="button" class="hebrew-key" data-char="ט" data-value="9">ט<span>9</span></button>
+          </div>
+        </div>
+
+        <!-- Tens (10-90) -->
+        <div class="hebrew-key-group">
+          <span class="group-label" data-i18n="hebrew.tens">10の位 (10-90)</span>
+          <div class="hebrew-keys">
+            <button type="button" class="hebrew-key" data-char="י" data-value="10">י<span>10</span></button>
+            <button type="button" class="hebrew-key" data-char="כ" data-value="20">כ<span>20</span></button>
+            <button type="button" class="hebrew-key" data-char="ל" data-value="30">ל<span>30</span></button>
+            <button type="button" class="hebrew-key" data-char="מ" data-value="40">מ<span>40</span></button>
+            <button type="button" class="hebrew-key" data-char="נ" data-value="50">נ<span>50</span></button>
+            <button type="button" class="hebrew-key" data-char="ס" data-value="60">ס<span>60</span></button>
+            <button type="button" class="hebrew-key" data-char="ע" data-value="70">ע<span>70</span></button>
+            <button type="button" class="hebrew-key" data-char="פ" data-value="80">פ<span>80</span></button>
+            <button type="button" class="hebrew-key" data-char="צ" data-value="90">צ<span>90</span></button>
+          </div>
+        </div>
+
+        <!-- Hundreds (100-400) -->
+        <div class="hebrew-key-group">
+          <span class="group-label" data-i18n="hebrew.hundreds">100の位 (100-400)</span>
+          <div class="hebrew-keys hebrew-keys-4">
+            <button type="button" class="hebrew-key" data-char="ק" data-value="100">ק<span>100</span></button>
+            <button type="button" class="hebrew-key" data-char="ר" data-value="200">ר<span>200</span></button>
+            <button type="button" class="hebrew-key" data-char="ש" data-value="300">ש<span>300</span></button>
+            <button type="button" class="hebrew-key" data-char="ת" data-value="400">ת<span>400</span></button>
+          </div>
+        </div>
+
+        <div class="keyboard-actions">
+          <button type="button" class="btn-secondary" id="hebrew-clear" data-i18n="hebrew.clear">クリア</button>
+          <button type="button" class="btn-secondary" id="hebrew-backspace" data-i18n="hebrew.backspace">1文字削除</button>
+        </div>
+      </div>
+
       <button id="calculate-btn" class="btn-primary" data-i18n="input.calculate">計算</button>
     </section>
 
@@ -103,7 +204,7 @@
     </section>
 
     <!-- Reference Table -->
-    <section class="reference-section">
+    <section class="reference-section" hidden>
       <h2 data-i18n="reference.title">参照テーブル</h2>
       <div class="reference-table-wrapper">
         <table class="reference-table" id="reference-table">

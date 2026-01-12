@@ -3,6 +3,11 @@
   box-sizing: border-box;
 }
 
+/* Ensure hidden attribute works even with display overrides */
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -208,6 +213,99 @@ h3 {
   border-left: 3px solid #4a90a4;
   font-size: 0.875rem;
   color: #555;
+}
+
+.scheme-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Hebrew Keyboard */
+.hebrew-keyboard {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.keyboard-label {
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.hebrew-key-group {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e8e8e8;
+}
+
+.hebrew-key-group:last-of-type {
+  margin-bottom: 0;
+}
+
+.group-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.hebrew-keys {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.375rem;
+  direction: rtl;
+}
+
+.hebrew-keys-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.hebrew-key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fafafa;
+  font-size: 1.5rem;
+  font-family: "SBL Hebrew", "Ezra SIL", "Times New Roman", serif;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
+  min-height: 3.5rem;
+}
+
+.hebrew-key span {
+  font-size: 0.65rem;
+  color: #888;
+  font-family: system-ui, sans-serif;
+  margin-top: 0.125rem;
+}
+
+.hebrew-key:hover {
+  background: #e8f4f8;
+  border-color: #4a90a4;
+}
+
+.hebrew-key:active {
+  background: #d4edda;
+  transform: scale(0.95);
+}
+
+.keyboard-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: center;
 }
 
 /* Input Section */
@@ -617,6 +715,66 @@ h3 {
   width: 100%;
 }
 
+/* Basics Tab Content */
+.basics-content {
+  padding: 0.5rem 0;
+}
+
+.basics-content h3 {
+  color: #2c3e50;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.25rem;
+}
+
+.basics-content h3:first-child {
+  margin-top: 0;
+}
+
+.basics-content p {
+  margin: 0 0 1rem;
+  color: #555;
+  line-height: 1.7;
+}
+
+.basics-steps {
+  margin: 0.5rem 0 1rem;
+  padding-left: 1.5rem;
+}
+
+.basics-steps li {
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.basics-schemes {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.scheme-card {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  border-left: 4px solid #4a90a4;
+}
+
+.scheme-card h4 {
+  margin: 0 0 0.5rem;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.scheme-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
 /* Tablet (600px+) */
 @media (min-width: 600px) {
   h1 {
@@ -644,6 +802,14 @@ h3 {
   .total-display {
     font-size: 2rem;
   }
+
+  .basics-schemes {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hebrew-keys {
+    grid-template-columns: repeat(9, 1fr);
+  }
 }
 
 /* Desktop (900px+) */
@@ -663,23 +829,30 @@ h3 {
   .input-section {
     display: grid;
     grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
     gap: 1rem;
     align-items: start;
   }
 
   .input-header {
     grid-column: 1 / -1;
+    grid-row: 1;
   }
 
   #input-text {
     grid-column: 1;
+    grid-row: 2;
   }
 
   #calculate-btn {
     grid-column: 2;
+    grid-row: 2;
     margin-top: 0;
     height: 100%;
     min-height: 80px;
+  }
+
+  .hebrew-keyboard {
+    grid-column: 1 / -1;
+    grid-row: 3;
   }
 }

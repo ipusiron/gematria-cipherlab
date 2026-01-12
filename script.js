@@ -11,14 +11,36 @@ let currentLang = 'ja';
 const I18N = {
   en: {
     'header.desc': 'Multi-scheme gematria calculator with token-based analysis and step-by-step trace visualization.',
-    'tab.simple': 'Simple',
+    'tab.basics': 'Basics',
+    'tab.simple': 'English',
     'tab.agrippa': 'Agrippa',
+    'tab.hebrew': 'Hebrew',
+    'basics.whatIs': 'What is Gematria?',
+    'basics.whatIsDesc': 'Gematria is a method of assigning numerical values to letters, used to interpret the numerical meaning of words and names. It is not merely a way to write numbers, but an interpretive technique for uncovering hidden meanings in words through their numerical values.',
+    'basics.origins': 'Origins',
+    'basics.originsDesc': 'Originally a mystical and Kabbalistic practice in Hebrew, similar systems also developed in Greek (Isopsephy). Today, it has been extended to English and other languages.',
+    'basics.howToUse': 'How to Use This Tool',
+    'basics.step1': 'Select the calculation scheme from the tabs above',
+    'basics.step2': 'Enter text in the input field (or select a preset)',
+    'basics.step3': 'Press "Calculate" to see results in 3 steps: Tokenization → Value Assignment → Total',
+    'basics.schemes': 'Supported Schemes',
+    'basics.englishDesc': 'Uses English alphabet (A-Z). Includes Simple (A=1), Zero-indexed (A=0), and multiples of 6 schemes.',
+    'basics.agrippaDesc': '16th century classical Latin gematria by Agrippa. Uses Hebrew numerical system.',
+    'basics.hebrewDesc': 'Original gematria. Maps 22 Hebrew letters to values 1-400. Includes on-screen keyboard.',
     'scheme.label': 'Scheme:',
     'scheme.simpleEnglish': 'Simple English A=1 (A=1, B=2, ...Z=26)',
     'scheme.simpleEnglish0': 'Simple English A=0 (A=0, B=1, ...Z=25)',
     'scheme.simpleLatin23': 'Simple Latin23 (I/J, U/V merged)',
+    'scheme.englishGematria': 'English Gematria (A=6, B=12, ...Z=156)',
     'scheme.agrippa23': 'Agrippa 23 (Classical Latin)',
     'scheme.agrippa27': 'Agrippa 27 (Extended with HI, HV)',
+    'scheme.hebrewGematria': 'Hebrew Gematria (א=1, ב=2, ...)',
+    'hebrew.keyboardLabel': 'Hebrew Letter Input:',
+    'hebrew.units': 'Units (1-9)',
+    'hebrew.tens': 'Tens (10-90)',
+    'hebrew.hundreds': 'Hundreds (100-400)',
+    'hebrew.clear': 'Clear',
+    'hebrew.backspace': 'Backspace',
     'input.label': 'Input Text:',
     'input.presetDefault': '-- Preset Examples --',
     'input.placeholder': 'Enter text to calculate...',
@@ -44,14 +66,36 @@ const I18N = {
   },
   ja: {
     'header.desc': '複数のゲマトリア方式に対応した計算ツール。トークン分析とステップごとのトレース表示機能付き。',
-    'tab.simple': 'シンプル',
+    'tab.basics': '基礎',
+    'tab.simple': '英語',
     'tab.agrippa': 'アグリッパ',
+    'tab.hebrew': 'ヘブライ',
+    'basics.whatIs': 'ゲマトリアとは？',
+    'basics.whatIsDesc': 'ゲマトリアは、文字に数値を割り当て、言葉や名前の数値的意味を解釈する手法です。単なる「数を表記する方法」ではなく、言葉に隠された意味を数値から読み解く解釈の手法です。',
+    'basics.origins': '起源',
+    'basics.originsDesc': '元来はヘブライ語の神秘主義的・カバラ的な実践でしたが、ギリシャ（イソプセフィア）でも同様のシステムが発展し、現在では英語など他の言語にも拡張されています。',
+    'basics.howToUse': 'このツールの使い方',
+    'basics.step1': '上のタブから計算したい方式を選択',
+    'basics.step2': '入力欄にテキストを入力（またはプリセットを選択）',
+    'basics.step3': '「計算」ボタンを押すと、トークン化→数値割当→合計の3ステップで結果を表示',
+    'basics.schemes': '対応方式',
+    'basics.englishDesc': '英語アルファベット(A-Z)を使用。Simple(A=1)、Zero-indexed(A=0)、6の倍数方式など。',
+    'basics.agrippaDesc': '16世紀のアグリッパによる古典ラテン語ゲマトリア。ヘブライ数値体系を使用。',
+    'basics.hebrewDesc': '本来のゲマトリア。ヘブライ文字22文字を1〜400の数値に対応。オンスクリーンキーボード付き。',
     'scheme.label': '方式:',
     'scheme.simpleEnglish': 'Simple English A=1 (A=1, B=2, ...Z=26)',
     'scheme.simpleEnglish0': 'Simple English A=0 (A=0, B=1, ...Z=25)',
     'scheme.simpleLatin23': 'Simple Latin23 (I/J, U/V 統合)',
+    'scheme.englishGematria': 'English Gematria (A=6, B=12, ...Z=156)',
     'scheme.agrippa23': 'Agrippa 23 (古典ラテン語)',
     'scheme.agrippa27': 'Agrippa 27 (HI, HV拡張)',
+    'scheme.hebrewGematria': 'Hebrew Gematria (א=1, ב=2, ...)',
+    'hebrew.keyboardLabel': 'ヘブライ文字入力:',
+    'hebrew.units': '1の位 (1-9)',
+    'hebrew.tens': '10の位 (10-90)',
+    'hebrew.hundreds': '100の位 (100-400)',
+    'hebrew.clear': 'クリア',
+    'hebrew.backspace': '1文字削除',
     'input.label': '入力テキスト:',
     'input.presetDefault': '-- プリセット例 --',
     'input.placeholder': '計算するテキストを入力...',
@@ -199,6 +243,81 @@ const SCHEMES = {
       `
     }
   },
+  'english-gematria': {
+    name: 'English Gematria',
+    description: {
+      en: 'A–Z mapped to multiples of 6 (A=6, B=12, ... Z=156). Also known as English Sumerian.',
+      ja: 'A〜Zを6の倍数に対応（A=6, B=12, ... Z=156）。English Sumerianとも呼ばれる。'
+    },
+    alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    tokenType: 'single',
+    mapping: {},
+    normalizations: {},
+    info: {
+      en: `
+        <p>English Gematria assigns values in multiples of 6 to the English alphabet.</p>
+        <ul>
+          <li>A = 6, B = 12, C = 18, ... Z = 156</li>
+          <li>Also known as English Sumerian Gematria</li>
+          <li>Originated in 19th-20th century occultism (Aleister Crowley et al.)</li>
+          <li>Often used to find words equaling 666 (e.g., COMPUTER = 666)</li>
+          <li>A modern artificial system, not historical cryptography</li>
+        </ul>
+      `,
+      ja: `
+        <p>English Gematriaは、英語アルファベットに6の倍数を割り当てます。</p>
+        <ul>
+          <li>A = 6, B = 12, C = 18, ... Z = 156</li>
+          <li>English Sumerian Gematriaとも呼ばれる</li>
+          <li>19〜20世紀の近代オカルティズムで考案（アレイスター・クロウリーら）</li>
+          <li>666になる単語を探す用途で有名（例：COMPUTER = 666）</li>
+          <li>古代からの伝統ではなく、近代の人工的システム</li>
+        </ul>
+      `
+    }
+  },
+  'hebrew-gematria': {
+    name: 'Hebrew Gematria',
+    description: {
+      en: 'Classical Hebrew gematria. 22 letters mapped to 1-400.',
+      ja: '古典的ヘブライ・ゲマトリア。22文字を1〜400に対応。'
+    },
+    alphabet: 'אבגדהוזחטיכלמנסעפצקרשת',
+    tokenType: 'single',
+    mapping: {
+      'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9,
+      'י': 10, 'כ': 20, 'ל': 30, 'מ': 40, 'נ': 50, 'ס': 60, 'ע': 70, 'פ': 80, 'צ': 90,
+      'ק': 100, 'ר': 200, 'ש': 300, 'ת': 400,
+      // Final forms (same values)
+      'ך': 20, 'ם': 40, 'ן': 50, 'ף': 80, 'ץ': 90
+    },
+    normalizations: {},
+    isRTL: true,
+    info: {
+      en: `
+        <p>Classical Hebrew Gematria assigns numerical values to the 22 Hebrew letters.</p>
+        <ul>
+          <li>Units (1-9): א to ט</li>
+          <li>Tens (10-90): י to צ</li>
+          <li>Hundreds (100-400): ק to ת</li>
+          <li>Final forms (ך, ם, ן, ף, ץ) have same values as regular forms</li>
+          <li>Used in Kabbalah and Jewish mysticism</li>
+        </ul>
+        <p><strong>Example:</strong> חי (chai, life) = 8 + 10 = 18</p>
+      `,
+      ja: `
+        <p>古典的ヘブライ・ゲマトリアは、22のヘブライ文字に数値を割り当てます。</p>
+        <ul>
+          <li>1の位（1-9）: א〜ט</li>
+          <li>10の位（10-90）: י〜צ</li>
+          <li>100の位（100-400）: ק〜ת</li>
+          <li>語末形（ך, ם, ן, ף, ץ）は通常形と同じ値</li>
+          <li>カバラ、ユダヤ神秘主義で使用</li>
+        </ul>
+        <p><strong>例：</strong> חי（chai、生命）= 8 + 10 = 18</p>
+      `
+    }
+  },
   'agrippa-23': {
     name: 'Agrippa 23',
     description: {
@@ -297,6 +416,12 @@ function initializeSchemeMappings() {
     latin23.mapping[latin23.alphabet[i]] = i + 1;
   }
 
+  // English Gematria: Multiples of 6 (A=6, B=12, ... Z=156)
+  const englishGematria = SCHEMES['english-gematria'];
+  for (let i = 0; i < 26; i++) {
+    englishGematria.mapping[String.fromCharCode(65 + i)] = (i + 1) * 6;
+  }
+
   // Agrippa 23: Hebrew-based values
   const agrippa23 = SCHEMES['agrippa-23'];
   for (const letter of agrippa23.alphabet) {
@@ -339,6 +464,11 @@ const PRESETS = {
     { label: 'CAESAR', value: 'CAESAR' },
     { label: 'JULIUS', value: 'JULIUS' }
   ],
+  'english-gematria': [
+    { label: 'HELLO', value: 'HELLO' },
+    { label: 'GEMATRIA', value: 'GEMATRIA' },
+    { label: 'COMPUTER', value: 'COMPUTER' }
+  ],
   'agrippa-23': [
     { label: 'ABRACADABRA', value: 'ABRACADABRA' },
     { label: 'ALPHA', value: 'ALPHA' },
@@ -348,6 +478,11 @@ const PRESETS = {
     { label: 'IHVH (Tetragrammaton)', value: 'IHVH' },
     { label: 'JEHOVA', value: 'JEHOVA' },
     { label: 'CHRISTVS', value: 'CHRISTVS' }
+  ],
+  'hebrew-gematria': [
+    { label: 'חי (chai, 18)', value: 'חי' },
+    { label: 'שלום (shalom, 376)', value: 'שלום' },
+    { label: 'אמת (emet, 441)', value: 'אמת' }
   ]
 };
 
@@ -394,10 +529,24 @@ function applyNormalizations(text, scheme) {
 /**
  * Tokenize text based on scheme rules
  */
+/**
+ * Check if character is valid for the scheme
+ */
+function isValidChar(char, scheme) {
+  // Check if it's in the mapping
+  if (scheme.mapping[char] !== undefined) return true;
+  // Check for Latin letters (for Latin-based schemes)
+  if (/[A-Z]/.test(char)) return true;
+  // Check for Hebrew letters
+  if (/[\u0590-\u05FF]/.test(char)) return true;
+  return false;
+}
+
 function tokenize(text, schemeId) {
   const scheme = SCHEMES[schemeId];
   const tokens = [];
-  const normalized = normalize(text);
+  // For Hebrew, don't uppercase (Hebrew has no case)
+  const normalized = scheme.isRTL ? text : normalize(text);
   const { text: normalizedText, changes } = applyNormalizations(normalized, scheme);
 
   // Track original positions for normalized characters
@@ -412,7 +561,7 @@ function tokenize(text, schemeId) {
       const char = normalizedText[i];
 
       // Skip non-alphabetic characters
-      if (!/[A-Z]/.test(char)) {
+      if (!isValidChar(char, scheme)) {
         i++;
         originalIndex++;
         continue;
@@ -458,7 +607,7 @@ function tokenize(text, schemeId) {
             value: null,
             state: TokenState.EXCLUDED
           });
-        } else if (/[A-Z]/.test(char)) {
+        } else if (isValidChar(char, scheme)) {
           tokens.push({
             token: char,
             original: originalChar,
@@ -477,8 +626,8 @@ function tokenize(text, schemeId) {
       const char = normalizedText[i];
       const originalChar = normalized[originalIndex];
 
-      // Skip non-alphabetic characters
-      if (!/[A-Z]/.test(char)) {
+      // Skip non-valid characters
+      if (!isValidChar(char, scheme)) {
         originalIndex++;
         continue;
       }
@@ -499,7 +648,7 @@ function tokenize(text, schemeId) {
           value: null,
           state: TokenState.EXCLUDED
         });
-      } else if (/[A-Z]/.test(char)) {
+      } else if (isValidChar(char, scheme)) {
         tokens.push({
           token: char,
           original: originalChar,
@@ -550,11 +699,16 @@ let currentSchemeId = 'simple-english';
 function getCurrentScheme() {
   const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
 
-  if (activeTab === 'simple') {
+  if (activeTab === 'basics') {
+    return null; // No scheme for basics tab
+  } else if (activeTab === 'simple') {
     return document.getElementById('simple-scheme').value;
-  } else {
+  } else if (activeTab === 'agrippa') {
     return document.getElementById('agrippa-scheme').value;
+  } else if (activeTab === 'hebrew') {
+    return 'hebrew-gematria';
   }
+  return 'simple-english';
 }
 
 /**
@@ -562,15 +716,20 @@ function getCurrentScheme() {
  */
 function updateSchemeNote() {
   const schemeId = getCurrentScheme();
+  if (!schemeId) return; // basics tab has no scheme
+
   const scheme = SCHEMES[schemeId];
 
   const simpleNote = document.getElementById('simple-scheme-note');
   const agrippaNote = document.getElementById('agrippa-scheme-note');
+  const hebrewNote = document.getElementById('hebrew-scheme-note');
 
-  if (schemeId.startsWith('simple')) {
+  if (schemeId.startsWith('simple') || schemeId === 'english-gematria') {
     simpleNote.textContent = scheme.description[currentLang];
-  } else {
+  } else if (schemeId.startsWith('agrippa')) {
     agrippaNote.textContent = scheme.description[currentLang];
+  } else if (schemeId === 'hebrew-gematria') {
+    hebrewNote.textContent = scheme.description[currentLang];
   }
 }
 
@@ -579,6 +738,8 @@ function updateSchemeNote() {
  */
 function updatePresets() {
   const schemeId = getCurrentScheme();
+  if (!schemeId) return; // basics tab has no scheme
+
   const presetSelect = document.getElementById('preset-select');
   const presets = PRESETS[schemeId] || [];
 
@@ -601,6 +762,8 @@ function updatePresets() {
  */
 function updateReferenceTable() {
   const schemeId = getCurrentScheme();
+  if (!schemeId) return; // basics tab has no scheme
+
   const scheme = SCHEMES[schemeId];
   const tbody = document.getElementById('reference-table-body');
 
@@ -669,9 +832,13 @@ function updateReferenceTable() {
 /**
  * Render token display (Step 1)
  */
-function renderTokenDisplay(tokens) {
+function renderTokenDisplay(tokens, schemeId) {
   const container = document.getElementById('token-display');
   container.replaceChildren();
+
+  const scheme = SCHEMES[schemeId];
+  const isRTL = scheme && scheme.isRTL;
+  container.dir = isRTL ? 'rtl' : 'ltr';
 
   tokens.forEach(t => {
     const span = document.createElement('span');
@@ -685,9 +852,13 @@ function renderTokenDisplay(tokens) {
 /**
  * Render mapping display (Step 2)
  */
-function renderMappingDisplay(tokens) {
+function renderMappingDisplay(tokens, schemeId) {
   const container = document.getElementById('mapping-display');
   container.replaceChildren();
+
+  const scheme = SCHEMES[schemeId];
+  const isRTL = scheme && scheme.isRTL;
+  container.dir = isRTL ? 'rtl' : 'ltr';
 
   tokens.forEach(tok => {
     const div = document.createElement('div');
@@ -715,10 +886,14 @@ function renderMappingDisplay(tokens) {
 /**
  * Render summation display (Step 3)
  */
-function renderSummationDisplay(tokens) {
+function renderSummationDisplay(tokens, schemeId) {
   const summationContainer = document.getElementById('summation-display');
   const totalContainer = document.getElementById('total-display');
   const excludedContainer = document.getElementById('excluded-list');
+
+  const scheme = SCHEMES[schemeId];
+  const isRTL = scheme && scheme.isRTL;
+  summationContainer.dir = isRTL ? 'rtl' : 'ltr';
 
   const included = tokens.filter(tok => tok.state !== TokenState.EXCLUDED && tok.value !== null);
   const excluded = tokens.filter(tok => tok.state === TokenState.EXCLUDED);
@@ -787,9 +962,9 @@ function calculate() {
     return;
   }
 
-  renderTokenDisplay(tokens);
-  renderMappingDisplay(tokens);
-  renderSummationDisplay(tokens);
+  renderTokenDisplay(tokens, schemeId);
+  renderMappingDisplay(tokens, schemeId);
+  renderSummationDisplay(tokens, schemeId);
 
   document.getElementById('results-section').hidden = false;
 
@@ -823,8 +998,10 @@ function showInfoModal(type) {
   let schemeId;
   if (type === 'simple') {
     schemeId = document.getElementById('simple-scheme').value;
-  } else {
+  } else if (type === 'agrippa') {
     schemeId = document.getElementById('agrippa-scheme').value;
+  } else if (type === 'hebrew') {
+    schemeId = 'hebrew-gematria';
   }
 
   const scheme = SCHEMES[schemeId];
@@ -904,10 +1081,19 @@ document.addEventListener('DOMContentLoaded', () => {
       targetTab.classList.add('active');
       targetTab.hidden = false;
 
-      // Update presets and reference table
-      updateSchemeNote();
-      updatePresets();
-      updateReferenceTable();
+      // Show/hide input and reference sections based on tab
+      const isBasicsTab = btn.dataset.tab === 'basics';
+      const isHebrewTab = btn.dataset.tab === 'hebrew';
+      document.querySelector('.input-section').hidden = isBasicsTab;
+      document.querySelector('.reference-section').hidden = isBasicsTab;
+      document.getElementById('hebrew-keyboard').hidden = !isHebrewTab;
+
+      if (!isBasicsTab) {
+        // Update presets and reference table for non-basics tabs
+        updateSchemeNote();
+        updatePresets();
+        updateReferenceTable();
+      }
 
       // Clear results
       document.getElementById('warnings-section').hidden = true;
@@ -969,6 +1155,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Hebrew keyboard handlers
+  document.querySelectorAll('.hebrew-key').forEach(key => {
+    key.addEventListener('click', () => {
+      const char = key.dataset.char;
+      const input = document.getElementById('input-text');
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const text = input.value;
+      input.value = text.substring(0, start) + char + text.substring(end);
+      input.selectionStart = input.selectionEnd = start + char.length;
+      input.focus();
+    });
+  });
+
+  document.getElementById('hebrew-clear').addEventListener('click', () => {
+    document.getElementById('input-text').value = '';
+    document.getElementById('input-text').focus();
+  });
+
+  document.getElementById('hebrew-backspace').addEventListener('click', () => {
+    const input = document.getElementById('input-text');
+    const start = input.selectionStart;
+    const text = input.value;
+    if (start > 0) {
+      input.value = text.substring(0, start - 1) + text.substring(start);
+      input.selectionStart = input.selectionEnd = start - 1;
+    }
+    input.focus();
+  });
+
   // Initialize with translations
   applyI18n();
+
+  // Hide input and reference sections on initial load (basics tab is default)
+  const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+  if (activeTab === 'basics') {
+    document.querySelector('.input-section').hidden = true;
+    document.querySelector('.reference-section').hidden = true;
+  }
 });
