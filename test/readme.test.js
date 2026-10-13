@@ -60,6 +60,10 @@ test('both READMEs state the implemented Agrippa and Hebrew rules', () => {
     assert.match(markdown, /NFKD/u);
     assert.match(markdown, /שָׁלוֹם/u);
     assert.match(markdown, /376/u);
+    assert.match(markdown, /936/u);
+    assert.match(markdown, /500/u);
+    assert.match(markdown, /900/u);
+    assert.match(markdown, /gematria-cipherlab\.analysis/u);
   }
 });
 

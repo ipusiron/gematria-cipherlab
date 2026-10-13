@@ -15,6 +15,7 @@ Gematria CipherLab is an educational gematria calculator supporting multiple cip
 - **Agrippa 23**: Single character tokens, J→I, U→V, W is undefined (excluded with warning)
 - **Agrippa 27-slot transcription**: U=200, J=600, V=700, HI=800, HV=900; longest-match tokenization; W treated as HV
 - **Hebrew Standard**: Hebrew letters א-ת, values 1-400; final forms keep ordinary-letter values; points are ignored
+- **Hebrew Final Values**: ordinary letters keep 1-400; final ך, ם, ן, ף, and ץ use 500-900; points are ignored
 
 ## Core Architecture
 
@@ -39,6 +40,12 @@ Gematria CipherLab is an educational gematria calculator supporting multiple cip
 1. **Tokenization**: Token boundaries with state highlighting
 2. **Mapping**: Token → numeric value correspondence
 3. **Summation**: Human-readable formula with excluded tokens listed separately
+
+### Comparison and Export
+- Compare only schemes in the same `family` (Latin or Hebrew)
+- Keep equality and numeric difference separate from semantic interpretation
+- Export the selected full trace and comparison summaries as deterministic `gematria-cipherlab.analysis` JSON
+- Include scheme IDs and versions in copied and downloaded results
 
 ## Development Guidelines
 

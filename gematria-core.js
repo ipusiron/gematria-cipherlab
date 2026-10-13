@@ -14,7 +14,9 @@
   'use strict';
 
   const MAX_INPUT_LENGTH = 10000;
-  const SCHEME_VERSION = '1.0.0';
+  const SCHEME_VERSION = '2.0.0';
+  const EXPORT_FORMAT = 'gematria-cipherlab.analysis';
+  const EXPORT_FORMAT_VERSION = 1;
 
   function sequenceMapping(alphabet, start, step = 1) {
     return Object.fromEntries(
@@ -43,11 +45,19 @@
     100, 200, 300, 400, 500, 600, 700, 800, 900
   ];
 
-  const hebrewMapping = {
+  const hebrewStandardMapping = {
     'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9,
     'י': 10, 'כ': 20, 'ך': 20, 'ל': 30, 'מ': 40, 'ם': 40, 'נ': 50, 'ן': 50,
     'ס': 60, 'ע': 70, 'פ': 80, 'ף': 80, 'צ': 90, 'ץ': 90, 'ק': 100,
     'ר': 200, 'ש': 300, 'ת': 400
+  };
+  const hebrewFinalValuesMapping = {
+    ...hebrewStandardMapping,
+    'ך': 500,
+    'ם': 600,
+    'ן': 700,
+    'ף': 800,
+    'ץ': 900
   };
 
   const agrippa27Mapping = Object.fromEntries(
@@ -108,8 +118,16 @@
       version: SCHEME_VERSION,
       family: 'hebrew',
       direction: 'rtl',
-      tokens: Object.keys(hebrewMapping),
-      mapping: hebrewMapping
+      tokens: Object.keys(hebrewStandardMapping),
+      mapping: hebrewStandardMapping
+    },
+    'hebrew-final-values': {
+      id: 'hebrew-final-values',
+      version: SCHEME_VERSION,
+      family: 'hebrew',
+      direction: 'rtl',
+      tokens: Object.keys(hebrewFinalValuesMapping),
+      mapping: hebrewFinalValuesMapping
     }
   };
 
@@ -240,13 +258,70 @@
     });
   }
 
+  function getComparableSchemeIds(schemeId) {
+    const selectedScheme = SCHEMES[schemeId];
+    if (!selectedScheme) {
+      throw new RangeError('unknown-scheme');
+    }
+
+    return Object.values(SCHEMES)
+      .filter(scheme => scheme.family === selectedScheme.family)
+      .map(scheme => scheme.id);
+  }
+
+  function createAnalysisPackage(input, selectedSchemeId, comparisonSchemeIds) {
+    const selected = analyze(input, selectedSchemeId);
+    const selectedFamily = SCHEMES[selectedSchemeId].family;
+    const requestedIds = comparisonSchemeIds === undefined
+      ? getComparableSchemeIds(selectedSchemeId)
+      : comparisonSchemeIds;
+
+    if (!Array.isArray(requestedIds)) {
+      throw new TypeError('comparison-schemes-must-be-array');
+    }
+
+    const schemeIds = [...new Set([selectedSchemeId, ...requestedIds])];
+    const comparisons = schemeIds.map(schemeId => {
+      const scheme = SCHEMES[schemeId];
+      if (!scheme) {
+        throw new RangeError('unknown-scheme');
+      }
+      if (scheme.family !== selectedFamily) {
+        throw new RangeError('incompatible-scheme-family');
+      }
+
+      const result = schemeId === selectedSchemeId ? selected : analyze(input, schemeId);
+      return {
+        schemeId: result.schemeId,
+        schemeVersion: result.schemeVersion,
+        total: result.total,
+        deltaFromSelected: result.total - selected.total,
+        tokenCount: result.tokens.length,
+        excludedCount: result.excluded.length,
+        ignoredCount: result.ignored.length
+      };
+    });
+
+    return deepFreeze({
+      format: EXPORT_FORMAT,
+      formatVersion: EXPORT_FORMAT_VERSION,
+      limitation: 'equal-totals-do-not-prove-relationship',
+      selected,
+      comparisons
+    });
+  }
+
   deepFreeze(SCHEMES);
 
   return deepFreeze({
     MAX_INPUT_LENGTH,
     SCHEME_VERSION,
+    EXPORT_FORMAT,
+    EXPORT_FORMAT_VERSION,
     SCHEMES,
     analyze,
+    getComparableSchemeIds,
+    createAnalysisPackage,
     isHebrewMark
   });
 });
