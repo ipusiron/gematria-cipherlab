@@ -484,6 +484,12 @@ h3 {
   border: 1px solid #ffeeba;
 }
 
+.token.ignored {
+  background: #eceff1;
+  color: #59636a;
+  border: 1px dashed #9aa5ab;
+}
+
 .token-legend {
   display: flex;
   flex-wrap: wrap;
@@ -518,6 +524,21 @@ h3 {
 .token-sample.normalized {
   background: #fff3cd;
   border: 1px solid #ffeeba;
+}
+
+.token-sample.ignored {
+  background: #eceff1;
+  border: 1px dashed #9aa5ab;
+}
+
+.analysis-note {
+  margin-top: 0.5rem;
+  color: #59636a;
+  font-size: 0.875rem;
+}
+
+.analysis-note:empty {
+  display: none;
 }
 
 /* Mapping Display */
@@ -655,6 +676,16 @@ h3 {
   background: #fff3cd !important;
 }
 
+.reference-notes {
+  margin-top: 0.75rem;
+  color: #59636a;
+  font-size: 0.875rem;
+}
+
+.reference-notes p {
+  margin: 0.25rem 0;
+}
+
 /* Footer */
 .footer {
   background: #2c3e50;
@@ -773,6 +804,23 @@ h3 {
   margin: 0;
   font-size: 0.9rem;
   color: #666;
+}
+
+.limits-callout {
+  margin-top: 1.25rem;
+  padding: 0.25rem 1rem 0.75rem;
+  background: #fff8e1;
+  border: 1px solid #f0cf75;
+  border-radius: 8px;
+}
+
+.source-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.5rem;
+}
+
+.source-list li {
+  margin-bottom: 0.4rem;
 }
 
 /* Tablet (600px+) */

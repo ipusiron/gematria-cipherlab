@@ -12,7 +12,7 @@
   <header class="header">
     <div class="header-top">
       <h1>Gematria CipherLab</h1>
-      <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Switch language">
+      <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Switch to English" data-i18n-attr="aria-label:lang.switch">
         <span class="lang-en">EN</span>
         <span class="lang-ja active">JA</span>
       </button>
@@ -23,14 +23,14 @@
   <main class="container">
     <!-- Tab Navigation -->
     <nav class="tab-bar" role="tablist">
-      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="basics" data-i18n="tab.basics">基礎</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="simple" data-i18n="tab.simple">English</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="agrippa" data-i18n="tab.agrippa">Agrippa</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="hebrew" data-i18n="tab.hebrew">Hebrew</button>
+      <button class="tab-btn active" id="tab-button-basics" role="tab" aria-selected="true" aria-controls="tab-basics" tabindex="0" data-tab="basics" data-i18n="tab.basics">基礎</button>
+      <button class="tab-btn" id="tab-button-simple" role="tab" aria-selected="false" aria-controls="tab-simple" tabindex="-1" data-tab="simple" data-i18n="tab.simple">英語・ラテン文字</button>
+      <button class="tab-btn" id="tab-button-agrippa" role="tab" aria-selected="false" aria-controls="tab-agrippa" tabindex="-1" data-tab="agrippa" data-i18n="tab.agrippa">Agrippa</button>
+      <button class="tab-btn" id="tab-button-hebrew" role="tab" aria-selected="false" aria-controls="tab-hebrew" tabindex="-1" data-tab="hebrew" data-i18n="tab.hebrew">ヘブライ文字</button>
     </nav>
 
     <!-- Basics Tab Content -->
-    <section class="tab-content active" id="tab-basics" role="tabpanel">
+    <section class="tab-content active" id="tab-basics" role="tabpanel" aria-labelledby="tab-button-basics">
       <div class="basics-content">
         <h3 data-i18n="basics.whatIs">ゲマトリアとは？</h3>
         <p data-i18n="basics.whatIsDesc">ゲマトリアは、文字に数値を割り当て、言葉や名前の数値的意味を解釈する手法です。単なる「数を表記する方法」ではなく、言葉に隠された意味を数値から読み解く解釈の手法です。</p>
@@ -60,11 +60,22 @@
             <p data-i18n="basics.hebrewDesc">本来のゲマトリア。ヘブライ文字22文字を1〜400の数値に対応。オンスクリーンキーボード付き。</p>
           </div>
         </div>
+
+        <aside class="limits-callout">
+          <h3 data-i18n="basics.limits">結果の読み方と限界</h3>
+          <p data-i18n="basics.limitsDesc">同じ合計値は、語同士の意味的関係、予言、真正性、暗号としての安全性を証明しません。値は方式・綴り・転写・Unicode正規化に左右されます。出典の確認と解釈は計算とは別に行ってください。</p>
+        </aside>
+
+        <h3 data-i18n="basics.sources">方式を確認するための資料</h3>
+        <ul class="source-list">
+          <li><a href="https://www.alchemy-texts.com/book/three-books-of-occult-philosophy/" target="_blank" rel="noopener noreferrer" data-i18n="basics.sourceAgrippa">Agrippa『De occulta philosophia』Book II, Chapter XX</a></li>
+          <li><a href="https://www.jewishencyclopedia.com/articles/6571-gematria" target="_blank" rel="noopener noreferrer" data-i18n="basics.sourceHebrew">Jewish Encyclopedia「Gematria」</a></li>
+        </ul>
       </div>
     </section>
 
     <!-- Simple Tab Content -->
-    <section class="tab-content" id="tab-simple" role="tabpanel" hidden>
+    <section class="tab-content" id="tab-simple" role="tabpanel" aria-labelledby="tab-button-simple" hidden>
       <div class="scheme-selector">
         <label for="simple-scheme" data-i18n="scheme.label">方式:</label>
         <select id="simple-scheme">
@@ -73,30 +84,30 @@
           <option value="english-gematria" data-i18n="scheme.englishGematria">English Gematria (A=6, B=12, ...Z=156)</option>
           <option value="simple-latin23" data-i18n="scheme.simpleLatin23">Simple Latin23 (I/J, U/V 統合)</option>
         </select>
-        <button class="info-btn" type="button" aria-label="方式の説明" data-info="simple">ⓘ</button>
+        <button class="info-btn" type="button" aria-label="この方式の説明を開く" data-i18n-attr="aria-label:info.label" data-info="simple">ⓘ</button>
       </div>
       <div class="scheme-note" id="simple-scheme-note"></div>
     </section>
 
     <!-- Agrippa Tab Content -->
-    <section class="tab-content" id="tab-agrippa" role="tabpanel" hidden>
+    <section class="tab-content" id="tab-agrippa" role="tabpanel" aria-labelledby="tab-button-agrippa" hidden>
       <div class="scheme-selector">
         <label for="agrippa-scheme" data-i18n="scheme.label">方式:</label>
         <select id="agrippa-scheme">
           <option value="agrippa-23" data-i18n="scheme.agrippa23">Agrippa 23 (古典ラテン語)</option>
           <option value="agrippa-27" data-i18n="scheme.agrippa27">Agrippa 27 (HI, HV拡張)</option>
         </select>
-        <button class="info-btn" type="button" aria-label="方式の説明" data-info="agrippa">ⓘ</button>
+        <button class="info-btn" type="button" aria-label="この方式の説明を開く" data-i18n-attr="aria-label:info.label" data-info="agrippa">ⓘ</button>
       </div>
       <div class="scheme-note" id="agrippa-scheme-note"></div>
     </section>
 
     <!-- Hebrew Tab Content -->
-    <section class="tab-content" id="tab-hebrew" role="tabpanel" hidden>
+    <section class="tab-content" id="tab-hebrew" role="tabpanel" aria-labelledby="tab-button-hebrew" hidden>
       <div class="scheme-selector">
         <label data-i18n="scheme.label">方式:</label>
         <span class="scheme-name" data-i18n="scheme.hebrewGematria">Hebrew Gematria (א=1, ב=2, ...)</span>
-        <button class="info-btn" type="button" aria-label="方式の説明" data-info="hebrew">ⓘ</button>
+        <button class="info-btn" type="button" aria-label="この方式の説明を開く" data-i18n-attr="aria-label:info.label" data-info="hebrew">ⓘ</button>
       </div>
       <div class="scheme-note" id="hebrew-scheme-note"></div>
     </section>
@@ -185,7 +196,10 @@
           <span class="legend-item"><span class="token-sample included"></span> <span data-i18n="legend.included">計算対象</span></span>
           <span class="legend-item"><span class="token-sample excluded"></span> <span data-i18n="legend.excluded">除外</span></span>
           <span class="legend-item"><span class="token-sample normalized"></span> <span data-i18n="legend.normalized">正規化</span></span>
+          <span class="legend-item"><span class="token-sample ignored"></span> <span data-i18n="legend.ignored">無視</span></span>
         </div>
+        <div class="analysis-note" id="normalization-summary"></div>
+        <div class="analysis-note" id="ignored-summary"></div>
       </div>
 
       <!-- Step 2: Mapping -->
@@ -217,16 +231,17 @@
           <tbody id="reference-table-body"></tbody>
         </table>
       </div>
+      <div class="reference-notes" id="reference-notes"></div>
     </section>
   </main>
 
   <footer>
     <div class="footer">
-      🔗 GitHubリポジトリはこちら（
+      <span data-i18n="footer.prefix">GitHubリポジトリ: </span>
       <a href="https://github.com/ipusiron/gematria-cipherlab" target="_blank" rel="noopener noreferrer">
         ipusiron/gematria-cipherlab
       </a>
-      ）
+      <span data-i18n="footer.suffix"></span>
     </div>
   </footer>
 
@@ -239,6 +254,8 @@
     </div>
   </dialog>
 
+  <script src="gematria-core.js"></script>
+  <script src="messages.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
