@@ -8,8 +8,8 @@ title: "Gematria CipherLab"
 subtitle_ja: "ゲマトリア計算トレースツール"
 subtitle_en: "Gematria Calculation Trace Tool"
 
-description_ja: "複数のゲマトリア方式に対応し、トークン化から合計計算までの過程を可視化する教育・分析向けWebツール"
-description_en: "Educational web tool supporting multiple gematria schemes with step-by-step calculation visualization"
+description_ja: "7種類の文字数値対応を、正規化・トークン化・数値割当・合計の過程とともに確認できる学習用Webツール"
+description_en: "Educational web tool for inspecting seven letter-value methods with normalization, tokenization, mapping, and summation traces"
 
 category_ja:
   - 古典暗号
@@ -34,7 +34,9 @@ hub: true
 ---
 -->
 
-# Gematria CipherLab – ゲマトリア計算トレースツール
+[English](README.en.md) · 日本語
+
+# Gematria CipherLab - ゲマトリア計算トレースツール
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/gematria-cipherlab?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/ipusiron/gematria-cipherlab?style=social)
@@ -44,322 +46,157 @@ hub: true
 
 **Day109 - 生成AIで作るセキュリティツール200**
 
-複数のゲマトリア方式を横断的に扱い、**トークン化 → 数値確定 → 合計計算** の過程を可視化する教育・分析向けのWebベース暗号・数秘ツールです。
-
----
+文字へ数値を割り当てる7種類の方式を、正規化・トークン化・数値割当・合計の順に確認できる、ブラウザー完結型の学習用ツールです。Agrippaの23文字表と現代綴り向けの27枠転写を区別し、ヘブライ文字の母音記号や表示形もUnicode正規化後に扱います。
 
 ## 🌐 デモページ
 
-👉 **[https://ipusiron.github.io/gematria-cipherlab/](https://ipusiron.github.io/gematria-cipherlab/)**
+👉 [Gematria CipherLabを開く](https://ipusiron.github.io/gematria-cipherlab/)
 
-ブラウザーで直接お試しいただけます。日本語・英語の切り替えに対応しています。
-
----
+インストールは不要です。入力した文字列はブラウザー内だけで処理され、外部へ送信されません。画面は日本語と英語を切り替えられます。
 
 ## 📸 スクリーンショット
 
-> ![アグリッパ暗号での計算トレース：トークン化 → 数値割当 → 合計計算の3ステップを可視化](assets/screenshot.png)
->
-> *アグリッパ暗号での計算トレース：トークン化 → 数値割当 → 合計計算の3ステップを可視化*
+![Agrippa 27枠で正規化と計算トレースを表示した画面](assets/screenshot.png)
 
----
-
-## 📚 ゲマトリアとは
-
-**ゲマトリア（Gematria）** とは、単なる「数を表記する方法」ではなく、言葉に隠された意味を数値から読み解く解釈の手法です。
-
-元来はヘブライ語の神秘主義的・カバラ的な実践でしたが、現在では他の言語にも拡張されています。
-
-### 古典的ゲマトリア
-
-#### ヘブライ・ゲマトリア
-
-ゲマトリアの本来の形式。ヘブライ文字に1〜400の数値を割り当てます。
-
-| 1の位 | | 10の位 | | 100の位 | |
-|-------|---|--------|---|---------|---|
-| א (Aleph) | 1 | י (Yod) | 10 | ק (Qoph) | 100 |
-| ב (Bet) | 2 | כ (Kaph) | 20 | ר (Resh) | 200 |
-| ג (Gimel) | 3 | ל (Lamed) | 30 | ש (Shin) | 300 |
-| ד (Dalet) | 4 | מ (Mem) | 40 | ת (Tav) | 400 |
-| ה (He) | 5 | נ (Nun) | 50 | | |
-| ו (Vav) | 6 | ס (Samekh) | 60 | | |
-| ז (Zayin) | 7 | ע (Ayin) | 70 | | |
-| ח (Chet) | 8 | פ (Pe) | 80 | | |
-| ט (Tet) | 9 | צ (Tsade) | 90 | | |
-
-**用途：** カバラ、ユダヤ神秘主義、聖書解釈
-
-**例：** חי（chai、生命）= 8 + 10 = 18 → 縁起の良い数字とされる
-
-#### ギリシャ・イソプセフィア（Isopsephy）
-
-ヘブライ・ゲマトリアと同様のシステムをギリシャ文字に適用したもの。
-
-| 1の位 | | 10の位 | | 100の位 | |
-|-------|---|--------|---|---------|---|
-| α (Alpha) | 1 | ι (Iota) | 10 | ρ (Rho) | 100 |
-| β (Beta) | 2 | κ (Kappa) | 20 | σ (Sigma) | 200 |
-| γ (Gamma) | 3 | λ (Lambda) | 30 | τ (Tau) | 300 |
-| δ (Delta) | 4 | μ (Mu) | 40 | υ (Upsilon) | 400 |
-| ε (Epsilon) | 5 | ν (Nu) | 50 | φ (Phi) | 500 |
-| ϛ (Stigma) | 6 | ξ (Xi) | 60 | χ (Chi) | 600 |
-| ζ (Zeta) | 7 | ο (Omicron) | 70 | ψ (Psi) | 700 |
-| η (Eta) | 8 | π (Pi) | 80 | ω (Omega) | 800 |
-| θ (Theta) | 9 | ϟ (Koppa) | 90 | ϡ (Sampi) | 900 |
-
-**用途：** 古代ギリシャの数秘術、新約聖書解釈
-
-**例：** χξϛ = 600 + 60 + 6 = 666（黙示録「獣の数字」）
-
-### 歴史的背景
-
-| 時期 | 出来事 |
-|------|--------|
-| 紀元前8世紀頃 | ギリシャ・ヘブライでアルファベット数字が使われ始める |
-| 紀元前3世紀頃 | イソプセフィア・ゲマトリアの実践が文献に登場 |
-| 紀元後 | カバラでゲマトリアが神秘主義的に発展 |
-| 16世紀 | アグリッパがラテン文字への体系的拡張を著作で発表 |
-| 19-20世紀 | 英語ゲマトリアが近代オカルティズムで考案される |
-
-現在の学術的見解では、ギリシャのイソプセフィアとヘブライのゲマトリアは、ほぼ同時期（紀元前数世紀）に独立または相互影響で発展したと考えられています。
-
----
+*Agrippa 27枠で、W→HVの置換と合計値を確認している画面*
 
 ## ✨ 特徴
 
-- **7方式対応**
-  - Simple English A=0（A=0, B=1, ... Z=25）
-  - Simple English A=1（A=1, B=2, ... Z=26）
-  - English Gematria（A=6, B=12, ... Z=156）
-  - Simple Latin23（I/J, U/V統合）
-  - Agrippa 23（古典ラテン23文字版）
-  - Agrippa 27（HI/HV拡張版）
-  - Hebrew Gematria（ヘブライ文字、א=1〜ת=400）
-- **トークン（可変長）を最小単位とする設計**
-- **計算過程の完全可視化**
-  - Step 1: Tokenization（トークン化）
-  - Step 2: Mapping（数値確定）
-  - Step 3: Summation（合計計算）
-- **多言語対応**（日本語・英語切替）
-- **教育用途を意識したUI**
-  - トークン境界のハイライト
-  - 参照テーブルとの相互ハイライト
-  - 警告の二段構え表示
-  - ヘブライ文字入力用オンスクリーンキーボード
-- **Webセキュリティを考慮した設計**
-  - GitHub Pages 公開前提
-  - DOM XSS / URL注入 / 供給網リスクへの対策
+- 7種類の方式を同じ画面で比較
+- 入力文字、置換後トークン、値、合計を段階表示
+- 計算対象・置換・除外・無視を色分け
+- Hebrew Standard用オンスクリーンキーボード
+- 日本語・英語の完全切替と設定保存
+- 320px幅から使えるモバイルファーストUI
+- 外部ライブラリー、外部API、ビルド処理なし
 
----
+## 🎯 ユースケース
 
-## 📖 対応ゲマトリア方式
+- ゲマトリアの「方式によって値が変わる」性質を授業や自習で確認する
+- Agrippa 23と27枠転写で、I/J・U/V・HI/HVの扱いを比較する
+- ヘブライ文字の通常形・語末形・母音記号を含む入力を観察する
+- 同じ語をA=0、A=1、A=1の6倍で計算し、方式間の関係を調べる
+- 計算過程を追い、表計算や手計算の結果を照合する
 
-### Simple Gematria
+## 📖 収録方式
 
-英語アルファベットには古典的な数値対応が存在しないため、複数の人工的なシステムが考案されました。本ツールでは以下の方式に対応しています。
+| 画面 | 方式 | 規則の概要 |
+|---|---|---|
+| 英語・ラテン文字 | English Zero-based | A=0〜Z=25 |
+| 英語・ラテン文字 | English Ordinal | A=1〜Z=26 |
+| 英語・ラテン文字 | English ×6 | English Ordinalの各値を6倍（A=6〜Z=156） |
+| 英語・ラテン文字 | Latin 23 | 23文字を1〜23で数え、J→I、U→V、Wは除外 |
+| Agrippa | Agrippa 23 | A〜I=1〜9、K〜S=10〜90、T/V/X/Y/Z=100〜500 |
+| Agrippa | Agrippa 27枠 | U=200、J=600、V=700、HI=800、HV=900、W→HV |
+| ヘブライ文字 | Hebrew Standard | 22文字を1〜400で計算し、語末形は通常形と同値 |
 
-#### Simple English A=1（別名：English Ordinal）
+### Agrippa 23と27枠転写
 
-最も一般的な英語ゲマトリア方式。
+Agrippa 23は原表の23文字を使います。現代綴りに含まれるJはI、UはVへ置き換え、Wは表にない文字として除外します。
 
-| A | B | C | D | E | F | G | H | I | J | K | L | M |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 |
+Agrippa 27枠は、原表末尾の「子音のI」「子音のV」「HI」「HV」を、現代入力でそれぞれJ、V、HI、HVへ対応させる本ツールの転写設計です。Uは200、Jは600、Vは700になり、WはHV=900へ置き換えます。この設計は、原綴りにあるI/Vの母音・子音を自動判定するものではありません。
 
-| N | O | P | Q | R | S | T | U | V | W | X | Y | Z |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 |
+HIとHVは連続している場合だけ複合トークンです。たとえば`HI`は800ですが、`H I`は8+9=17です。
 
-**用途：** 数秘術、パズル、一般的な文字↔数値変換
+### Hebrew Standard
 
-#### Simple English A=0（Zero-indexed Ordinal）
+א〜תを標準値1〜400へ対応させます。ך・ם・ן・ף・ץは、それぞれכ・מ・נ・פ・צと同じ値です。入力はNFKDで正規化し、母音記号と朗誦記号を警告なしで無視します。そのため、`שָׁלוֹם`は`שלום`と同じ376になり、表示形`שׁ`も分解してש=300として計算します。
 
-プログラミングや暗号学で使用されるゼロインデックス方式。
+## 🔬 計算トレース
 
-| A | B | C | D | E | F | G | H | I | J | K | L | M |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+結果は次の3段階で表示します。
 
-| N | O | P | Q | R | S | T | U | V | W | X | Y | Z |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 |
+1. Tokenization: 入力を方式固有のトークンへ分け、置換・除外・無視を示す
+2. Value assignment: 各計算対象トークンと数値を対応させる
+3. Total: 値の加算式と合計を示す
 
-**用途：** プログラミング、暗号学（配列インデックスが0始まりのため）
+| 状態 | 意味 |
+|---|---|
+| 計算対象 | 方式の表にあり、合計へ加える |
+| 正規化・置換 | J→I、W→HV、Unicode正規化などを経て合計へ加える |
+| 除外 | 文字ではあるが、選択した方式に定義がない |
+| 無視 | 空白、句読点、数字、ヘブライ文字の母音記号・朗誦記号など |
 
-#### Simple Latin23
+入力は最大10,000文字です。英語・ラテン文字方式ではNFKCと大文字化、ヘブライ文字方式ではNFKDを適用します。
 
-古典ラテンアルファベット（23文字）に基づく方式。J→I、U→V に正規化し、W は未定義として警告付きで除外します。
+## ⚠️ 結果の限界
 
-#### English Gematria（6の倍数方式）
+同じ合計値は、語同士の意味的関係、予言、真正性、暗号としての安全性を証明しません。結果は、選んだ方式、綴り、転写、Unicode正規化に左右されます。
 
-**別名：** English Sumerian Gematria
+このツールは文字と数値の対応を確認する計算器です。歴史的・宗教的な解釈の正しさを判定せず、暗号化、認証、改ざん検知にも使用できません。
 
-**方式：** A=6, B=12, C=18, ... Z=156（6の倍数）
+## 🔒 セキュリティとプライバシー
 
-| A | B | C | D | E | F | G | H | I | J | K | L | M |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 6 | 12 | 18 | 24 | 30 | 36 | 42 | 48 | 54 | 60 | 66 | 72 | 78 |
+- 入力はブラウザー内で処理し、保存・送信しない
+- ユーザー入力の描画に`textContent`と`replaceChildren()`を使用
+- `script-src 'self'`、`connect-src 'none'`などのCSPをHTMLで設定
+- 計算表と計算結果を再帰的に凍結し、実行中の変更を防止
+- 外部ライブラリーを読み込まない
 
-| N | O | P | Q | R | S | T | U | V | W | X | Y | Z |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 84 | 90 | 96 | 102 | 108 | 114 | 120 | 126 | 132 | 138 | 144 | 150 | 156 |
+GitHub Pagesでは、このリポジトリーから`X-Frame-Options`などのHTTPレスポンスヘッダーを設定できません。HTMLのCSPメタ要素では`frame-ancestors`も有効にならないため、公開ページの埋め込み禁止は保証していません。
 
-**起源：** 19-20世紀の近代オカルティズム。アレイスター・クロウリー（Aleister Crowley）らが儀式魔術の著作を通じて普及に貢献。古代からの伝統ではなく、近代に人工的に作られたシステム。
+## 🚀 使い方
 
-**用途：** 主に以下の文脈で使用される。
+1. 「英語・ラテン文字」「Agrippa」「ヘブライ文字」からタブを選びます。
+2. 必要なら方式を選択します。
+3. テキストを入力するか、プリセットを選びます。
+4. 「計算」を押してトレースと参照表を確認します。
 
-- **終末論・黙示録解釈** — 「獣の数字666」を現代の事物に当てはめる
-- **オカルト・数秘術** — 神秘主義的な意味を見出す実践
-- **陰謀論** — 政治家、企業、技術が「悪魔的」であると主張する文脈
+ローカルでは`index.html`を直接開けます。ローカルHTTPサーバーから配信する場合も、追加のビルドは不要です。
 
-**666になる単語の例：**
+## 🧪 テスト
 
-| 単語 | 計算式 | 合計 |
-|------|--------|------|
-| COMPUTER | 18+90+78+96+126+120+30+108 | 666 |
-| WITCHCRAFT | 138+54+120+18+48+18+108+6+36+120 | 666 |
-| KISSINGER | 66+54+114+114+54+84+42+30+108 | 666 |
-| MONSANTO | 78+90+84+114+6+84+120+90 | 666 |
-| MARK OF BEAST | 78+6+108+66+90+36+12+30+6+114+120 | 666 |
+Node.js 22以降で、依存パッケージをインストールせずに実行できます。
 
-> **注意：** 学術的な暗号学や歴史的な記数法とは異なる、比較的新しい人工的なシステムです。
+```console
+npm test
+```
 
----
-
-### Agrippa Cipher（アグリッパ暗号）
-
-アグリッパ暗号は、ルネサンス期の魔術師・オカルティスト **ハインリヒ・コルネリウス・アグリッパ**（Heinrich Cornelius Agrippa von Nettesheim, 1486–1535）が著書『**隠秘哲学について（De Occulta Philosophia Libri Tres）**』で体系化した **ラテン文字のゲマトリア（数秘術的換字システム）** です。
-
-#### 23文字版（16世紀ラテンアルファベット）
-
-| 区分 | 文字 | 数値 |
-|------|------|------|
-| Units | A–I | 1–9 |
-| Tens | K–S | 10–90 |
-| Hundreds | T, V, X, Y, Z | 100–500 |
-
-**エイリアス処理**: J → I（9）、U → V（200）、W → 未定義（警告して除外）
-
-#### 27文字版（拡張版）
-
-| 追加 | 数値 | 備考 |
-|-----|------|------|
-| J | 600 | 子音の I |
-| V | 700 | 子音の V |
-| HI | 800 | ダイグラフ |
-| HV (W) | 900 | ダイグラフ |
-
-### Agrippa 23 / 27 の違い
-
-| 項目 | Agrippa 23 | Agrippa 27 |
-|------|-----------|-----------|
-| トークン | 1文字のみ | 1文字 + HI/HV |
-| HI/HV | 分割される | 2文字トークン |
-| W | 未定義 | HV として扱う |
-
-同じ入力でも、方式によって **トークン化結果と合計値が変化** します。
-
-### 方式の比較表
-
-| 方式 | 対応 | 起源 | 主な用途 |
-|------|------|------|----------|
-| ヘブライ・ゲマトリア | א=1, ב=2... | 古代（紀元前） | カバラ、聖書解釈 |
-| ギリシャ・イソプセフィア | α=1, β=2... | 古代（紀元前） | 数秘術、聖書解釈 |
-| Simple English A=1 | A=1, B=2... | 近代 | パズル、一般的変換 |
-| Simple English A=0 | A=0, B=1... | 近代 | プログラミング、暗号学 |
-| English Gematria | A=6, B=12... | 19-20世紀 | オカルト、数秘術 |
-| Agrippa 23/27 | ラテン23/27文字 | 16世紀 | 数秘術、古典暗号研究 |
-| Hebrew Gematria | א=1, ב=2... | 古代（紀元前） | カバラ、聖書解釈（本ツール実装） |
-
----
-
-## 🔬 計算過程の可視化
-
-計算を以下の **3ステップ** で表示します。
-
-1. **Tokenization** – トークン境界をハイライト表示
-2. **Mapping** – トークンごとの数値確定
-3. **Summation** – 人間に読みやすい式表示（例：`HI(800) + HV(900) = 1700`）
-
-### トークンの状態
-
-| 状態 | 説明 | 表示 |
-|------|------|------|
-| Included | 計算に含める | 緑系背景 |
-| Excluded | 未定義のため除外 | 赤系背景 + 取消線 |
-| Normalized | 正規化して含める | 黄系背景（例：J→I） |
-
----
-
-## 🎯 プリセット例題
-
-各方式に **プリセット例題（3種類）** を用意しています。
-
-- **Basic** – 基本的な計算確認
-- **Difference** – 方式差が出る例
-- **Warning** – 未定義トークンの挙動確認
-
----
-
-## 🔒 セキュリティ設計
-
-本ツールは **静的Webツールとしての安全性** を重視しています。
-
-- `innerHTML` の使用を最小限に抑制（`textContent` / `replaceChildren()` を使用）
-- ユーザー入力は常にエスケープして描画
-- CSP（Content Security Policy）を設定
-- `Object.freeze()` でデータオブジェクトを凍結
-- 外部送信・APIキー保持は行わない
-
----
-
-## 🔗 関連リソース
-
-### ゲマトリア全般
-
-- [Wikipedia – Gematria](https://en.wikipedia.org/wiki/Gematria)
-- [Wikipedia – Isopsephy](https://en.wikipedia.org/wiki/Isopsephy)
-
-### アグリッパ暗号
-
-- [Esoteric Archives – Agrippa](https://www.esotericarchives.com/agrippa/agripp2b.htm)
-- [Internet Archive – De Occulta Philosophia（1533年版）](https://archive.org/details/DeOccultaPhilosophiaLoc1533)
-- [Wikipedia – Three Books of Occult Philosophy](https://en.wikipedia.org/wiki/Three_Books_of_Occult_Philosophy)
-
----
+テストでは、7方式の代表値、Agrippaの最長一致と境界、ヘブライ文字の正規化、データの不変性、日英メッセージの対応、HTML/CSPの要件を確認します。
 
 ## 📁 ディレクトリー構造
 
-```
+```text
 gematria-cipherlab/
-├── index.html          # メインHTMLファイル
-├── script.js           # アプリケーションロジック
-├── style.css           # スタイルシート（モバイルファースト）
-├── README.md           # 本ドキュメント
-├── LICENSE             # ライセンスファイル
-├── CLAUDE.md           # Claude Code用プロジェクト情報
+├── .github/
+│   └── workflows/
+│       └── test.yml          # Node.js 22で自動テスト
 ├── assets/
-│   └── screenshot.png  # スクリーンショット
-└── docs/
-    ├── detailed_design.md  # 詳細設計書
-    ├── ui_spec.md          # 画面仕様書
-    └── hosoku.md           # ゲマトリア補足資料
+│   ├── en/
+│   │   └── screenshot.png    # 英語画面のスクリーンショット
+│   └── screenshot.png        # 日本語画面のスクリーンショット
+├── docs/
+│   ├── detailed_design.md    # 計算コアとデータ処理の設計
+│   └── ui_spec.md            # 画面・操作・レスポンシブ仕様
+├── test/
+│   ├── core.test.js          # 計算コアのテスト
+│   ├── html.test.js          # HTMLとCSPのテスト
+│   ├── i18n.test.js          # 日英メッセージのテスト
+│   └── readme.test.js        # README同期のテスト
+├── gematria-core.js          # DOMに依存しない計算コア
+├── messages.js               # 日本語・英語メッセージ
+├── script.js                 # 画面制御と結果描画
+├── style.css                 # モバイルファーストのスタイル
+├── index.html                # アプリケーション画面
+├── README.md                 # 日本語版README
+├── README.en.md              # 英語版README
+├── CLAUDE.md                 # 開発時の規則と構成
+├── package.json              # テストコマンド
+└── LICENSE                   # MITライセンス
 ```
 
----
+## 🔗 参考資料
+
+- [Agrippa, *De occulta philosophia*, Book II, Chapter XX](https://www.alchemy-texts.com/book/three-books-of-occult-philosophy/)
+- [Internet Archive: *De Occulta Philosophia*（1533年版）](https://archive.org/details/DeOccultaPhilosophiaLoc1533)
+- [Jewish Encyclopedia: “Gematria”](https://www.jewishencyclopedia.com/articles/6571-gematria)
+- [Unicode Names List: Hebrew](https://unicode.org/Public/18.0.0/charts/nameslist/0590/)
+- [Unicode Names List: Alphabetic Presentation Forms](https://www.unicode.org/Public/UCD/latest/charts/nameslist/fb00/)
 
 ## 📄 ライセンス
 
-- ソースコードのライセンスは `LICENSE` ファイルを参照してください。
-
----
+MIT Licenseです。詳細は[LICENSE](LICENSE)を参照してください。
 
 ## 🛠️ このツールについて
 
-本ツールは、「生成AIで作るセキュリティツール200」プロジェクトの一環として開発されました。
-このプロジェクトでは、AIの支援を活用しながら、セキュリティに関連するさまざまなツールを200日間にわたり制作・公開していく取り組みを行っています。
-
-プロジェクトの詳細や他のツールについては、以下のページをご覧ください。
-
-🔗 [https://akademeia.info/?page_id=44607](https://akademeia.info/?page_id=44607)
+本ツールは「生成AIで作るセキュリティツール200」プロジェクトのDay109として制作しています。プロジェクト全体と他のツールは、[生成AIで作るセキュリティツール200](https://akademeia.info/?page_id=44607)を参照してください。

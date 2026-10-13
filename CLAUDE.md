@@ -10,16 +10,16 @@ Gematria CipherLab is an educational gematria calculator supporting multiple cip
 
 - **Simple English A=0**: A-Z, single character tokens, A=0
 - **Simple English A=1**: A-Z, single character tokens, A=1
-- **English Gematria**: A-Z, single character tokens, A=6 (multiples of 6)
+- **English ×6**: A-Z, single character tokens, exactly six times English Ordinal
 - **Simple Latin23**: I/J merged, U/V merged, single character tokens
 - **Agrippa 23**: Single character tokens, J→I, U→V, W is undefined (excluded with warning)
-- **Agrippa 27**: Single + multi-character tokens (HI, HV), longest-match tokenization, W treated as HV
-- **Hebrew Gematria**: Hebrew letters א-ת, values 1-400, includes final forms
+- **Agrippa 27-slot transcription**: U=200, J=600, V=700, HI=800, HV=900; longest-match tokenization; W treated as HV
+- **Hebrew Standard**: Hebrew letters א-ת, values 1-400; final forms keep ordinary-letter values; points are ignored
 
 ## Core Architecture
 
 ### Calculation Pipeline
-1. Normalization
+1. Unicode normalization (NFKC for Latin methods, NFKD for Hebrew)
 2. Tokenization (scheme-specific rules)
 3. Numeric assignment
 4. Summation
@@ -30,8 +30,8 @@ Gematria CipherLab is an educational gematria calculator supporting multiple cip
 - **Aliased/Normalized**: Normalized form included
 
 ### UI Structure (per ui_spec.md)
-- Header with tool name
-- Tab bar: English / Agrippa / Hebrew
+- Header with tool name and complete English/Japanese switching
+- Tab bar: Basics / English & Latin / Agrippa / Hebrew
 - Main area: Input, settings, results
 - Footer: GitHub link
 
@@ -61,4 +61,11 @@ Gematria CipherLab is an educational gematria calculator supporting multiple cip
 ### JavaScript
 - Vanilla JS with `querySelector` and `addEventListener`
 - Click/tap-first UI (avoid hover-dependent interactions)
-- Use `requestAnimationFrame` for animations
+- Keep calculations in `gematria-core.js` without DOM dependencies
+- Render user-controlled text with `textContent`; do not introduce HTML-string insertion
+- Keep Japanese and English keys synchronized in `messages.js`
+
+### Verification
+- Run `npm test` without installing dependencies
+- Verify `file://` operation as well as HTTP/HTTPS publication
+- Check 320, 390, 600, 768, and 1280 pixel widths for overflow and overlap
