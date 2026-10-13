@@ -31,6 +31,15 @@ test('all interface scripts are external and no inline event handlers are used',
   assert.doesNotMatch(html, /\son[a-z]+\s*=/iu);
 });
 
+test('CSP allows only same-origin static assets and blocks outbound connections', () => {
+  assert.match(html, /script-src 'self'/u);
+  assert.match(html, /style-src 'self'/u);
+  assert.match(html, /connect-src 'none'/u);
+  assert.match(html, /object-src 'none'/u);
+  assert.match(html, /base-uri 'none'/u);
+  assert.doesNotMatch(html, /'unsafe-inline'|'unsafe-eval'/u);
+});
+
 test('source links and limitations are present in the basics panel', () => {
   assert.match(html, /data-i18n="basics\.limitsDesc"/u);
   assert.match(html, /three-books-of-occult-philosophy/u);

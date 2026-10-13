@@ -63,13 +63,11 @@ test('Agrippa 27 uses longest matches and keeps boundaries meaningful', () => {
 test('Agrippa 27 treats W as an explicit HV alias', () => {
   const result = analyze('W', 'agrippa-27');
   assert.equal(result.total, 900);
-  assert.deepEqual(result.tokens[0], {
-    original: 'W',
-    token: 'HV',
-    value: 900,
-    index: 0,
-    normalized: true
-  });
+  assert.equal(result.tokens[0].original, 'W');
+  assert.equal(result.tokens[0].token, 'HV');
+  assert.equal(result.tokens[0].value, 900);
+  assert.equal(result.tokens[0].index, 0);
+  assert.equal(result.tokens[0].normalized, true);
 });
 
 test('Agrippa 27 modern transcription keeps I/J and U/V distinct', () => {

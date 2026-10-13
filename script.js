@@ -110,7 +110,11 @@
   }
 
   function t(key, parameters = {}) {
-    let value = messages[currentLanguage][key] || messages.en[key] || key;
+    let value = Object.prototype.hasOwnProperty.call(messages[currentLanguage], key)
+      ? messages[currentLanguage][key]
+      : Object.prototype.hasOwnProperty.call(messages.en, key)
+        ? messages.en[key]
+        : key;
     Object.entries(parameters).forEach(([name, replacement]) => {
       value = value.replaceAll(`{${name}}`, String(replacement));
     });
