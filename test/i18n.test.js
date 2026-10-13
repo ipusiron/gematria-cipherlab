@@ -26,4 +26,15 @@ test('method names describe arithmetic without unsupported historical labels', (
   const allText = [...Object.values(messages.ja), ...Object.values(messages.en)].join('\n');
   assert.doesNotMatch(allText, /Sumerian|Crowley|クロウリー/u);
   assert.match(messages.en['scheme.englishGematria'], /×6/u);
+  assert.match(messages.en['scheme.hebrewFinalValues'], /500–900/u);
+  assert.match(messages.ja['scheme.note.hebrewFinalValues'], /ך・ם・ן・ף・ץ/u);
+});
+
+test('comparison and export cautions reject semantic scoring claims', () => {
+  for (const language of ['ja', 'en']) {
+    assert.ok(messages[language]['comparison.notice']);
+    assert.ok(messages[language]['export.summaryNotice']);
+  }
+  assert.doesNotMatch(messages.ja['comparison.notice'], /信頼度|意味がある/u);
+  assert.doesNotMatch(messages.en['comparison.notice'], /confidence score|meaningful match/iu);
 });

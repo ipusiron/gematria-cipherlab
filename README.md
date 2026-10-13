@@ -8,8 +8,8 @@ title: "Gematria CipherLab"
 subtitle_ja: "ゲマトリア計算トレースツール"
 subtitle_en: "Gematria Calculation Trace Tool"
 
-description_ja: "7種類の文字数値対応を、正規化・トークン化・数値割当・合計の過程とともに確認できる学習用Webツール"
-description_en: "Educational web tool for inspecting seven letter-value methods with normalization, tokenization, mapping, and summation traces"
+description_ja: "8種類の文字数値対応を、計算トレース・方式横断比較・再現用JSONとともに確認できる学習用Webツール"
+description_en: "Educational web tool for inspecting eight letter-value methods with calculation traces, cross-method comparison, and reproducible JSON"
 
 category_ja:
   - 古典暗号
@@ -46,7 +46,7 @@ hub: true
 
 **Day109 - 生成AIで作るセキュリティツール200**
 
-文字へ数値を割り当てる7種類の方式を、正規化・トークン化・数値割当・合計の順に確認できる、ブラウザー完結型の学習用ツールです。Agrippaの23文字表と現代綴り向けの27枠転写を区別し、ヘブライ文字の母音記号や表示形もUnicode正規化後に扱います。
+文字へ数値を割り当てる8種類の方式を、正規化・トークン化・数値割当・合計の順に確認できる、ブラウザー完結型の学習用ツールです。同じ入力を同じ文字体系の方式で自動比較し、方式ID・版・計算トレースを含む結果をコピーまたはJSON保存できます。
 
 ## 🌐 デモページ
 
@@ -56,27 +56,28 @@ hub: true
 
 ## 📸 スクリーンショット
 
-![Agrippa 27枠で正規化と計算トレースを表示した画面](assets/screenshot.png)
+![Hebrew Standardと語末形500〜900方式を比較した画面](assets/screenshot.png)
 
-*Agrippa 27枠で、W→HVの置換と合計値を確認している画面*
+*`שלום`をHebrew Standardの376とHebrew Final Valuesの936で比較している画面*
 
 ## ✨ 特徴
 
-- 7種類の方式を同じ画面で比較
+- 8種類の方式を収録し、同じ文字体系の方式を自動比較
 - 入力文字、置換後トークン、値、合計を段階表示
 - 計算対象・置換・除外・無視を色分け
-- Hebrew Standard用オンスクリーンキーボード
+- Hebrew Standardと語末形500〜900方式を切り替えられるオンスクリーンキーボード
+- 方式ID・方式版・トレース・比較結果を含むコピーと再現用JSON
 - 日本語・英語の完全切替と設定保存
 - 320px幅から使えるモバイルファーストUI
 - 外部ライブラリー、外部API、ビルド処理なし
 
 ## 🎯 ユースケース
 
-- ゲマトリアの「方式によって値が変わる」性質を授業や自習で確認する
-- Agrippa 23と27枠転写で、I/J・U/V・HI/HVの扱いを比較する
-- ヘブライ文字の通常形・語末形・母音記号を含む入力を観察する
-- 同じ語をA=0、A=1、A=1の6倍で計算し、方式間の関係を調べる
-- 計算過程を追い、表計算や手計算の結果を照合する
+- `שלום`がHebrew Standardでは376、語末形500〜900方式では936になる差を確認する
+- `COMPUTER`をEnglish Ordinalの111とEnglish ×6の666で並べ、6倍関係を検算する
+- Agrippa 23と27枠転写で、I/J・U/V・HI/HVの扱いと除外文字の差を比較する
+- ヘブライ文字の通常形・語末形・母音記号・表示形を含む入力を観察する
+- 方式IDと版を含むJSONを保存し、授業・記事・検算で計算条件を共有する
 
 ## 📖 収録方式
 
@@ -89,6 +90,7 @@ hub: true
 | Agrippa | Agrippa 23 | A〜I=1〜9、K〜S=10〜90、T/V/X/Y/Z=100〜500 |
 | Agrippa | Agrippa 27枠 | U=200、J=600、V=700、HI=800、HV=900、W→HV |
 | ヘブライ文字 | Hebrew Standard | 22文字を1〜400で計算し、語末形は通常形と同値 |
+| ヘブライ文字 | Hebrew Final Values | 通常形は1〜400、語末形ך・ם・ן・ף・ץは500〜900 |
 
 ### Agrippa 23と27枠転写
 
@@ -98,9 +100,11 @@ Agrippa 27枠は、原表末尾の「子音のI」「子音のV」「HI」「HV�
 
 HIとHVは連続している場合だけ複合トークンです。たとえば`HI`は800ですが、`H I`は8+9=17です。
 
-### Hebrew Standard
+### Hebrew Standardと語末形500〜900方式
 
 א〜תを標準値1〜400へ対応させます。ך・ם・ן・ף・ץは、それぞれכ・מ・נ・פ・צと同じ値です。入力はNFKDで正規化し、母音記号と朗誦記号を警告なしで無視します。そのため、`שָׁלוֹם`は`שלום`と同じ376になり、表示形`שׁ`も分解してש=300として計算します。
+
+Hebrew Final Valuesは別方式として、5つの語末形だけをך=500、ם=600、ן=700、ף=800、ץ=900で数えます。たとえば`שלום`は、末尾のםを40とするStandardでは376、600とするFinal Valuesでは936です。語末形を含まない`חי`は、どちらも18です。この差は方式選択の差であり、一方が他方より正しいという採点ではありません。
 
 ## 🔬 計算トレース
 
@@ -119,6 +123,8 @@ HIとHVは連続している場合だけ複合トークンです。たとえば`
 
 入力は最大10,000文字です。英語・ラテン文字方式ではNFKCと大文字化、ヘブライ文字方式ではNFKDを適用します。
 
+計算後は、選択方式を基準として同じ文字体系の全方式をカードで比較します。差は数値差だけを示し、一致や近さを意味・信頼度として採点しません。「結果をコピー」は方式名・方式ID・方式版・トレース・比較結果を含むテキストを作り、「JSONを保存」は同じ情報を機械可読な`gematria-cipherlab.analysis`形式で保存します。保存データに時刻を入れないため、同じ入力と方式から同じJSONを再生成できます。
+
 ## ⚠️ 結果の限界
 
 同じ合計値は、語同士の意味的関係、予言、真正性、暗号としての安全性を証明しません。結果は、選んだ方式、綴り、転写、Unicode正規化に左右されます。
@@ -131,6 +137,7 @@ HIとHVは連続している場合だけ複合トークンです。たとえば`
 - ユーザー入力の描画に`textContent`と`replaceChildren()`を使用
 - `script-src 'self'`、`connect-src 'none'`などのCSPをHTMLで設定
 - 計算表と計算結果を再帰的に凍結し、実行中の変更を防止
+- コピーとJSONはブラウザー内で生成し、外部サービスへ送信しない
 - 外部ライブラリーを読み込まない
 
 GitHub Pagesでは、このリポジトリーから`X-Frame-Options`などのHTTPレスポンスヘッダーを設定できません。HTMLのCSPメタ要素では`frame-ancestors`も有効にならないため、公開ページの埋め込み禁止は保証していません。
@@ -140,7 +147,8 @@ GitHub Pagesでは、このリポジトリーから`X-Frame-Options`などのHTT
 1. 「英語・ラテン文字」「Agrippa」「ヘブライ文字」からタブを選びます。
 2. 必要なら方式を選択します。
 3. テキストを入力するか、プリセットを選びます。
-4. 「計算」を押してトレースと参照表を確認します。
+4. 「計算」を押してトレース、方式横断比較、参照表を確認します。
+5. 必要に応じて結果をコピーするか、再現用JSONを保存します。
 
 ローカルでは`index.html`を直接開けます。ローカルHTTPサーバーから配信する場合も、追加のビルドは不要です。
 
@@ -152,7 +160,7 @@ Node.js 22以降で、依存パッケージをインストールせずに実行�
 npm test
 ```
 
-テストでは、7方式の代表値、Agrippaの最長一致と境界、ヘブライ文字の正規化、データの不変性、日英メッセージの対応、HTML/CSPの要件を確認します。
+テストでは、8方式の代表値、Agrippaの最長一致と境界、ヘブライ文字の正規化と語末形500〜900、方式比較、JSON形式、データの不変性、日英メッセージの対応、HTML/CSPの要件を確認します。
 
 ## 📁 ディレクトリー構造
 
@@ -190,6 +198,7 @@ gematria-cipherlab/
 - [Agrippa, *De occulta philosophia*, Book II, Chapter XX](https://www.alchemy-texts.com/book/three-books-of-occult-philosophy/)
 - [Internet Archive: *De Occulta Philosophia*（1533年版）](https://archive.org/details/DeOccultaPhilosophiaLoc1533)
 - [Jewish Encyclopedia: “Gematria”](https://www.jewishencyclopedia.com/articles/6571-gematria)
+- [Jewish Encyclopedia: “Arithmetic”](https://www.jewishencyclopedia.com/articles/1776-arithmetic)
 - [Unicode Names List: Hebrew](https://unicode.org/Public/18.0.0/charts/nameslist/0590/)
 - [Unicode Names List: Alphabetic Presentation Forms](https://www.unicode.org/Public/UCD/latest/charts/nameslist/fb00/)
 

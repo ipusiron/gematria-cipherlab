@@ -7,6 +7,7 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const css = fs.readFileSync(path.join(root, 'style.css'), 'utf8');
 
 test('browser scripts load calculation core and messages before the interface', () => {
   const core = html.indexOf('src="gematria-core.js"');
@@ -44,4 +45,20 @@ test('source links and limitations are present in the basics panel', () => {
   assert.match(html, /data-i18n="basics\.limitsDesc"/u);
   assert.match(html, /three-books-of-occult-philosophy/u);
   assert.match(html, /jewishencyclopedia\.com\/articles\/6571-gematria/u);
+  assert.match(html, /jewishencyclopedia\.com\/articles\/1776-arithmetic/u);
+});
+
+test('Hebrew methods, comparison, and versioned export controls are present', () => {
+  assert.match(html, /id="hebrew-scheme"/u);
+  assert.match(html, /value="hebrew-gematria"/u);
+  assert.match(html, /value="hebrew-final-values"/u);
+  assert.equal((html.match(/class="hebrew-key final-form-key"/gu) || []).length, 5);
+  assert.match(html, /id="comparison-list"[^>]+role="list"/u);
+  assert.match(html, /id="copy-summary"/u);
+  assert.match(html, /id="download-json"/u);
+  assert.match(html, /id="action-status"[^>]+aria-live="polite"/u);
+});
+
+test('long normalization notes wrap without widening the page', () => {
+  assert.match(css, /\.analysis-note\s*\{[^}]*overflow-wrap:\s*anywhere;/su);
 });

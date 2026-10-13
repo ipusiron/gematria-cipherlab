@@ -4,8 +4,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
   MAX_INPUT_LENGTH,
+  EXPORT_FORMAT,
+  EXPORT_FORMAT_VERSION,
   SCHEMES,
-  analyze
+  analyze,
+  getComparableSchemeIds,
+  createAnalysisPackage
 } = require('../gematria-core.js');
 
 test('Simple English A=1 maps the alphabet from 1 to 26', () => {
@@ -87,6 +91,23 @@ test('Hebrew final forms use the same values as their ordinary forms', () => {
   assert.deepEqual(result.tokens.map(item => item.value), [20, 20, 40, 40, 50, 50, 80, 80, 90, 90]);
 });
 
+test('Hebrew final-values method assigns 500 through 900 only to final forms', () => {
+  const finals = analyze('כךמםנןפףצץ', 'hebrew-final-values');
+  assert.deepEqual(finals.tokens.map(item => item.value), [20, 500, 40, 600, 50, 700, 80, 800, 90, 900]);
+  assert.equal(analyze('שלום', 'hebrew-final-values').total, 936);
+  assert.equal(analyze('חי', 'hebrew-final-values').total, 18);
+  assert.equal(analyze('אמת', 'hebrew-final-values').total, 441);
+});
+
+test('Hebrew methods keep identical Unicode normalization and mark handling', () => {
+  for (const schemeId of ['hebrew-gematria', 'hebrew-final-values']) {
+    const pointed = analyze('שָׁלוֹם', schemeId);
+    assert.equal(pointed.excluded.length, 0);
+    assert.ok(pointed.ignored.every(item => item.reason === 'hebrew-mark'));
+    assert.equal(analyze('שׁ', schemeId).total, 300);
+  }
+});
+
 test('Hebrew points and cantillation marks are ignored without exclusion', () => {
   const result = analyze('שָׁלוֹם', 'hebrew-gematria');
   assert.equal(result.total, 376);
@@ -133,6 +154,53 @@ test('repeated analysis does not mutate compound-token priority', () => {
   analyze('HVHI', 'agrippa-27');
   analyze('HIHV', 'agrippa-27');
   assert.deepEqual(SCHEMES['agrippa-27'].compoundTokens, before);
+});
+
+test('comparable methods stay within the selected script family', () => {
+  assert.deepEqual(getComparableSchemeIds('hebrew-gematria'), [
+    'hebrew-gematria',
+    'hebrew-final-values'
+  ]);
+  assert.deepEqual(getComparableSchemeIds('simple-english'), [
+    'simple-english',
+    'simple-english-0',
+    'english-gematria',
+    'simple-latin23',
+    'agrippa-23',
+    'agrippa-27'
+  ]);
+});
+
+test('analysis packages include a reproducible trace and comparison deltas', () => {
+  const output = createAnalysisPackage('שלום', 'hebrew-gematria');
+  assert.equal(output.format, EXPORT_FORMAT);
+  assert.equal(output.formatVersion, EXPORT_FORMAT_VERSION);
+  assert.equal(output.selected.schemeId, 'hebrew-gematria');
+  assert.equal(output.selected.schemeVersion, SCHEMES['hebrew-gematria'].version);
+  assert.equal(output.selected.total, 376);
+  assert.deepEqual(
+    output.selected.tokens.map(item => [item.original, item.token, item.value]),
+    [['ש', 'ש', 300], ['ל', 'ל', 30], ['ו', 'ו', 6], ['ם', 'ם', 40]]
+  );
+  assert.deepEqual(
+    output.comparisons.map(item => [item.schemeId, item.total, item.deltaFromSelected]),
+    [['hebrew-gematria', 376, 0], ['hebrew-final-values', 936, 560]]
+  );
+  assert.equal(output.limitation, 'equal-totals-do-not-prove-relationship');
+  assert.ok(Object.isFrozen(output));
+  assert.ok(Object.isFrozen(output.selected.tokens));
+  assert.ok(Object.isFrozen(output.comparisons[0]));
+});
+
+test('analysis packages reject cross-family or malformed comparison requests', () => {
+  assert.throws(
+    () => createAnalysisPackage('ABC', 'simple-english', ['hebrew-gematria']),
+    error => error instanceof RangeError && error.message === 'incompatible-scheme-family'
+  );
+  assert.throws(
+    () => createAnalysisPackage('ABC', 'simple-english', 'simple-english-0'),
+    error => error instanceof TypeError && error.message === 'comparison-schemes-must-be-array'
+  );
 });
 
 test('input length and unknown schemes are rejected', () => {

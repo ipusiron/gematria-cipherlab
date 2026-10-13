@@ -70,6 +70,7 @@
         <ul class="source-list">
           <li><a href="https://www.alchemy-texts.com/book/three-books-of-occult-philosophy/" target="_blank" rel="noopener noreferrer" data-i18n="basics.sourceAgrippa">Agrippa『De occulta philosophia』Book II, Chapter XX</a></li>
           <li><a href="https://www.jewishencyclopedia.com/articles/6571-gematria" target="_blank" rel="noopener noreferrer" data-i18n="basics.sourceHebrew">Jewish Encyclopedia「Gematria」</a></li>
+          <li><a href="https://www.jewishencyclopedia.com/articles/1776-arithmetic" target="_blank" rel="noopener noreferrer" data-i18n="basics.sourceHebrewFinals">Jewish Encyclopedia「Arithmetic」</a></li>
         </ul>
       </div>
     </section>
@@ -105,8 +106,11 @@
     <!-- Hebrew Tab Content -->
     <section class="tab-content" id="tab-hebrew" role="tabpanel" aria-labelledby="tab-button-hebrew" hidden>
       <div class="scheme-selector">
-        <label data-i18n="scheme.label">方式:</label>
-        <span class="scheme-name" data-i18n="scheme.hebrewGematria">Hebrew Gematria (א=1, ב=2, ...)</span>
+        <label for="hebrew-scheme" data-i18n="scheme.label">方式:</label>
+        <select id="hebrew-scheme">
+          <option value="hebrew-gematria" data-i18n="scheme.hebrewGematria">Hebrew Standard（語末形は同値）</option>
+          <option value="hebrew-final-values" data-i18n="scheme.hebrewFinalValues">Hebrew Final Values（語末形500〜900）</option>
+        </select>
         <button class="info-btn" type="button" aria-label="この方式の説明を開く" data-i18n-attr="aria-label:info.label" data-info="hebrew">ⓘ</button>
       </div>
       <div class="scheme-note" id="hebrew-scheme-note"></div>
@@ -169,6 +173,18 @@
           </div>
         </div>
 
+        <!-- Final forms -->
+        <div class="hebrew-key-group">
+          <span class="group-label" data-i18n="hebrew.finalForms">語末形</span>
+          <div class="hebrew-keys">
+            <button type="button" class="hebrew-key final-form-key" data-char="ך" data-standard-value="20" data-final-value="500">ך<span>20</span></button>
+            <button type="button" class="hebrew-key final-form-key" data-char="ם" data-standard-value="40" data-final-value="600">ם<span>40</span></button>
+            <button type="button" class="hebrew-key final-form-key" data-char="ן" data-standard-value="50" data-final-value="700">ן<span>50</span></button>
+            <button type="button" class="hebrew-key final-form-key" data-char="ף" data-standard-value="80" data-final-value="800">ף<span>80</span></button>
+            <button type="button" class="hebrew-key final-form-key" data-char="ץ" data-standard-value="90" data-final-value="900">ץ<span>90</span></button>
+          </div>
+        </div>
+
         <div class="keyboard-actions">
           <button type="button" class="btn-secondary" id="hebrew-clear" data-i18n="hebrew.clear">クリア</button>
           <button type="button" class="btn-secondary" id="hebrew-backspace" data-i18n="hebrew.backspace">1文字削除</button>
@@ -215,6 +231,20 @@
         <div class="total-display" id="total-display"></div>
         <div class="excluded-list" id="excluded-list"></div>
       </div>
+
+      <!-- Method Comparison -->
+      <div class="trace-step comparison-step" aria-labelledby="comparison-title">
+        <h3 id="comparison-title" data-i18n="comparison.title">方式横断比較</h3>
+        <p class="comparison-notice" data-i18n="comparison.notice">同じ入力を、同じ文字体系に対応する方式だけで計算します。合計の一致は意味的関係を示しません。</p>
+        <div class="comparison-list" id="comparison-list" role="list"></div>
+      </div>
+
+      <!-- Copy and JSON export -->
+      <div class="result-actions">
+        <button type="button" class="btn-secondary" id="copy-summary" data-i18n="export.copy">結果をコピー</button>
+        <button type="button" class="btn-secondary" id="download-json" data-i18n="export.download">JSONを保存</button>
+      </div>
+      <p class="action-status" id="action-status" role="status" aria-live="polite"></p>
     </section>
 
     <!-- Reference Table -->
