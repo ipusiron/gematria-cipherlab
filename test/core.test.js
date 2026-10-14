@@ -9,7 +9,9 @@ const {
   SCHEMES,
   analyze,
   getComparableSchemeIds,
-  createAnalysisPackage
+  createBreakdown,
+  createAnalysisPackage,
+  restoreAnalysisPackage
 } = require('../gematria-core.js');
 
 test('Simple English A=1 maps the alphabet from 1 to 26', () => {
@@ -131,6 +133,13 @@ test('punctuation, spaces, and digits are ignored rather than warned about', () 
   assert.equal(result.ignored.length, 4);
 });
 
+test('tabs and line breaks are ignored as separators', () => {
+  const result = analyze('A\tB\r\nC', 'simple-english');
+  assert.equal(result.total, 6);
+  assert.equal(result.excluded.length, 0);
+  assert.deepEqual(result.ignored.map(item => item.char), ['\t', '\r', '\n']);
+});
+
 test('undefined letters are reported as excluded', () => {
   const result = analyze('ABCΩ', 'simple-english');
   assert.equal(result.total, 6);
@@ -200,6 +209,64 @@ test('analysis packages reject cross-family or malformed comparison requests', (
   assert.throws(
     () => createAnalysisPackage('ABC', 'simple-english', 'simple-english-0'),
     error => error instanceof TypeError && error.message === 'comparison-schemes-must-be-array'
+  );
+});
+
+test('line and whitespace-segment breakdown preserves the complete total', () => {
+  const breakdown = createBreakdown('AB CD\nE\tF', 'simple-english');
+  assert.equal(breakdown.total, 21);
+  assert.deepEqual(
+    breakdown.lines.map(line => [line.number, line.total, line.segments.length]),
+    [[1, 10, 2], [2, 11, 2]]
+  );
+  assert.deepEqual(
+    breakdown.lines.flatMap(line => line.segments.map(segment => [segment.input, segment.total])),
+    [['AB', 3], ['CD', 7], ['E', 5], ['F', 6]]
+  );
+  assert.equal(
+    breakdown.lines.reduce((sum, line) => sum + line.total, 0),
+    breakdown.total
+  );
+  assert.ok(Object.isFrozen(breakdown.lines[0].segments[0]));
+});
+
+test('saved analysis packages restore only after full recomputation', () => {
+  const saved = JSON.parse(JSON.stringify(createAnalysisPackage('שלום', 'hebrew-final-values')));
+  const restored = restoreAnalysisPackage(saved);
+  assert.equal(restored.selected.total, 936);
+  assert.equal(restored.selected.schemeId, 'hebrew-final-values');
+  assert.ok(Object.isFrozen(restored));
+});
+
+test('analysis package restore rejects tampering and extra fields', () => {
+  const tampered = JSON.parse(JSON.stringify(createAnalysisPackage('ABC', 'simple-english')));
+  tampered.selected.total = 999;
+  assert.throws(
+    () => restoreAnalysisPackage(tampered),
+    error => error.message === 'analysis-package-integrity-failed'
+  );
+
+  const extended = JSON.parse(JSON.stringify(createAnalysisPackage('ABC', 'simple-english')));
+  extended.note = 'untrusted-extra-field';
+  assert.throws(
+    () => restoreAnalysisPackage(extended),
+    error => error.message === 'analysis-package-integrity-failed'
+  );
+});
+
+test('analysis package restore rejects unsupported format, version, and malformed data', () => {
+  const original = JSON.parse(JSON.stringify(createAnalysisPackage('ABC', 'simple-english')));
+  assert.throws(
+    () => restoreAnalysisPackage({ ...original, format: 'unknown' }),
+    error => error instanceof RangeError && error.message === 'analysis-format-unsupported'
+  );
+  assert.throws(
+    () => restoreAnalysisPackage({ ...original, formatVersion: 2 }),
+    error => error instanceof RangeError && error.message === 'analysis-version-unsupported'
+  );
+  assert.throws(
+    () => restoreAnalysisPackage({ format: EXPORT_FORMAT, formatVersion: EXPORT_FORMAT_VERSION }),
+    error => error instanceof TypeError && error.message === 'analysis-package-invalid'
   );
 });
 

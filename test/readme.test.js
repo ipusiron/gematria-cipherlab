@@ -67,6 +67,19 @@ test('both READMEs state the implemented Agrippa and Hebrew rules', () => {
   }
 });
 
+test('both READMEs document verified import, breakdown, and opt-in input sharing', () => {
+  for (const markdown of [ja, en]) {
+    assert.match(markdown, /formatVersion: 1/u);
+    assert.match(markdown, /1 ?MB/iu);
+    assert.match(markdown, /4,000/u);
+    assert.match(markdown, /Ctrl\/Command\+Enter|Ctrl／⌘＋Enter/u);
+  }
+  assert.match(ja, /言語学的な単語判定ではありません/u);
+  assert.match(en, /not linguistic word segmentation/iu);
+  assert.match(ja, /入力本文をURLへ入れず/u);
+  assert.match(en, /without placing the input text in the URL/iu);
+});
+
 test('README terminology avoids unsupported origin claims', () => {
   const combined = `${ja}\n${en}`;
   assert.doesNotMatch(combined, /English Sumerian|Aleister Crowley|アレイスター・クロウリー/u);

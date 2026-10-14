@@ -100,9 +100,24 @@
     ])
   });
 
+  const SCHEME_LOCATIONS = Object.freeze({
+    'simple-english': Object.freeze({ tab: 'simple', selectId: 'simple-scheme' }),
+    'simple-english-0': Object.freeze({ tab: 'simple', selectId: 'simple-scheme' }),
+    'english-gematria': Object.freeze({ tab: 'simple', selectId: 'simple-scheme' }),
+    'simple-latin23': Object.freeze({ tab: 'simple', selectId: 'simple-scheme' }),
+    'agrippa-23': Object.freeze({ tab: 'agrippa', selectId: 'agrippa-scheme' }),
+    'agrippa-27': Object.freeze({ tab: 'agrippa', selectId: 'agrippa-scheme' }),
+    'hebrew-gematria': Object.freeze({ tab: 'hebrew', selectId: 'hebrew-scheme' }),
+    'hebrew-final-values': Object.freeze({ tab: 'hebrew', selectId: 'hebrew-scheme' })
+  });
+  const MAX_ANALYSIS_FILE_SIZE = 1024 * 1024;
+  const MAX_SHARE_URL_LENGTH = 4000;
+
   let currentLanguage = selectInitialLanguage();
   let lastPackage = null;
+  let lastBreakdown = null;
   let lastActionStatusKey = null;
+  let lastImportStatusKey = null;
   let modalTrigger = null;
 
   function selectInitialLanguage() {
@@ -161,6 +176,7 @@
       renderAnalysis(lastPackage);
     }
     renderActionStatus();
+    renderImportStatus();
   }
 
   function getActiveTab() {
@@ -273,14 +289,73 @@
 
   function renderAnalysis(analysisPackage) {
     const result = analysisPackage.selected;
+    lastBreakdown = core.createBreakdown(result.input, result.schemeId);
     renderWarnings(result);
     renderTokenization(result);
     renderMapping(result);
     renderTotal(result);
     renderAnalysisNotes(result);
+    renderBreakdown(lastBreakdown);
     renderComparison(analysisPackage.comparisons, result.schemeId);
     highlightReferenceTable(result.tokens);
     document.getElementById('results-section').hidden = false;
+  }
+
+  function renderBreakdown(breakdown) {
+    const list = document.getElementById('breakdown-list');
+    const direction = core.SCHEMES[breakdown.schemeId].direction || 'ltr';
+    list.replaceChildren();
+
+    breakdown.lines.forEach(line => {
+      const card = document.createElement('article');
+      card.className = 'breakdown-line';
+      card.setAttribute('role', 'listitem');
+
+      const heading = document.createElement('h4');
+      heading.textContent = t('breakdown.line', { number: line.number });
+
+      const lineInput = document.createElement('p');
+      lineInput.className = 'breakdown-line-input';
+      lineInput.dir = direction;
+      lineInput.textContent = line.input || t('breakdown.emptyLine');
+
+      const meta = document.createElement('p');
+      meta.className = 'breakdown-line-meta';
+      meta.textContent = t('breakdown.lineMeta', {
+        total: line.total,
+        segments: line.segments.length
+      });
+
+      const segments = document.createElement('div');
+      segments.className = 'breakdown-segments';
+      if (line.segments.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'breakdown-empty';
+        empty.textContent = t('breakdown.noSegments');
+        segments.append(empty);
+      } else {
+        line.segments.forEach(segment => {
+          const segmentCard = document.createElement('div');
+          segmentCard.className = 'breakdown-segment';
+          const input = document.createElement('p');
+          input.className = 'breakdown-segment-input';
+          input.dir = direction;
+          input.textContent = segment.input;
+          const segmentMeta = document.createElement('p');
+          segmentMeta.className = 'breakdown-segment-meta';
+          segmentMeta.textContent = t('breakdown.segmentMeta', {
+            total: segment.total,
+            included: segment.tokenCount,
+            excluded: segment.excludedCount
+          });
+          segmentCard.append(input, segmentMeta);
+          segments.append(segmentCard);
+        });
+      }
+
+      card.append(heading, lineInput, meta, segments);
+      list.append(card);
+    });
   }
 
   function renderComparison(comparisons, selectedSchemeId) {
@@ -449,8 +524,10 @@
     try {
       lastPackage = core.createAnalysisPackage(document.getElementById('input-text').value, schemeId);
       lastActionStatusKey = null;
+      lastImportStatusKey = null;
       renderAnalysis(lastPackage);
       renderActionStatus();
+      renderImportStatus();
     } catch (error) {
       if (error instanceof RangeError && error.message === 'input-too-long') {
         showSingleWarning(t('warning.inputTooLong'));
@@ -472,10 +549,13 @@
 
   function clearResult() {
     lastPackage = null;
+    lastBreakdown = null;
     lastActionStatusKey = null;
+    lastImportStatusKey = null;
     document.getElementById('warnings-section').hidden = true;
     document.getElementById('results-section').hidden = true;
     renderActionStatus();
+    renderImportStatus();
   }
 
   function activateTab(button, moveFocus = false) {
@@ -495,6 +575,19 @@
     clearResult();
     updateSchemeContext();
     if (moveFocus) button.focus();
+  }
+
+  function activateScheme(schemeId) {
+    const location = SCHEME_LOCATIONS[schemeId];
+    if (!location) {
+      return false;
+    }
+
+    const tab = document.getElementById(`tab-button-${location.tab}`);
+    activateTab(tab);
+    document.getElementById(location.selectId).value = schemeId;
+    updateSchemeContext();
+    return true;
   }
 
   function handleTabKeydown(event) {
@@ -555,6 +648,15 @@
         : t('comparison.delta', { delta: formatSignedNumber(comparison.deltaFromSelected) });
       return `- ${name} [${comparison.schemeId} v${comparison.schemeVersion}]: ${comparison.total} (${difference})`;
     });
+    const breakdown = lastBreakdown || core.createBreakdown(result.input, result.schemeId);
+    const breakdownLines = breakdown.lines.flatMap(line => {
+      const lineLabel = t('breakdown.line', { number: line.number });
+      const lineSummary = `${lineLabel}: ${line.total}`;
+      const segmentLines = line.segments.length > 0
+        ? line.segments.map(segment => `  - ${segment.input}: ${segment.total}`)
+        : [`  - ${t('breakdown.noSegments')}`];
+      return [lineSummary, ...segmentLines];
+    });
 
     return [
       'Gematria CipherLab',
@@ -565,6 +667,9 @@
       `${t('export.summaryNormalized')}: ${result.normalizedInput}`,
       `${t('export.summaryTrace')}: ${trace}`,
       `${t('export.summaryTotal')}: ${result.total}`,
+      '',
+      `${t('export.summaryBreakdown')}:`,
+      ...breakdownLines,
       '',
       `${t('export.summaryComparison')}:`,
       ...comparisonLines,
@@ -629,10 +734,130 @@
     renderActionStatus();
   }
 
+  function importErrorKey(error) {
+    if (error instanceof SyntaxError) return 'import.invalidJson';
+    if (error.message === 'analysis-format-unsupported') return 'import.unsupportedFormat';
+    if (error.message === 'analysis-version-unsupported') return 'import.unsupportedVersion';
+    if (error.message === 'analysis-package-integrity-failed') return 'import.integrityFailed';
+    return 'import.invalidPackage';
+  }
+
+  async function importJson(event) {
+    const fileInput = event.currentTarget;
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+
+    try {
+      if (file.size > MAX_ANALYSIS_FILE_SIZE) {
+        lastImportStatusKey = 'import.tooLarge';
+        renderImportStatus();
+        return;
+      }
+
+      const parsed = JSON.parse(await file.text());
+      const restored = core.restoreAnalysisPackage(parsed);
+      activateScheme(restored.selected.schemeId);
+      document.getElementById('input-text').value = restored.selected.input;
+      lastPackage = restored;
+      lastActionStatusKey = null;
+      lastImportStatusKey = 'import.loaded';
+      renderAnalysis(lastPackage);
+      renderActionStatus();
+      renderImportStatus();
+    } catch (error) {
+      lastImportStatusKey = importErrorKey(error);
+      renderImportStatus();
+    } finally {
+      fileInput.value = '';
+    }
+  }
+
+  function buildShareUrl() {
+    const schemeId = getCurrentSchemeId();
+    if (!schemeId) {
+      throw new Error('share-invalid');
+    }
+
+    const url = new URL(window.location.href);
+    url.search = '';
+    url.hash = '';
+    url.searchParams.set('lang', currentLanguage);
+    url.searchParams.set('scheme', schemeId);
+    const includesInput = document.getElementById('share-include-input').checked;
+    if (includesInput) {
+      url.searchParams.set('input', document.getElementById('input-text').value);
+    }
+    if (url.href.length > MAX_SHARE_URL_LENGTH) {
+      throw new RangeError('share-url-too-long');
+    }
+    return { href: url.href, includesInput };
+  }
+
+  async function copyShareUrl() {
+    if (!lastPackage) return;
+
+    try {
+      const share = buildShareUrl();
+      await writeClipboard(share.href);
+      lastActionStatusKey = share.includesInput
+        ? 'share.copiedWithInput'
+        : 'share.copiedWithoutInput';
+    } catch (error) {
+      lastActionStatusKey = error.message === 'share-url-too-long'
+        ? 'share.tooLong'
+        : 'export.copyFailed';
+    }
+    renderActionStatus();
+  }
+
+  function readSharedState() {
+    const parameters = new URLSearchParams(window.location.search);
+    const schemeId = parameters.get('scheme');
+    if (schemeId === null) {
+      return null;
+    }
+    if (!SCHEME_LOCATIONS[schemeId]) {
+      return { errorKey: 'share.invalid' };
+    }
+
+    const hasInput = parameters.has('input');
+    const input = hasInput ? parameters.get('input') : '';
+    if (input.length > core.MAX_INPUT_LENGTH) {
+      return { errorKey: 'share.invalid' };
+    }
+    return { schemeId, input, hasInput };
+  }
+
+  function restoreSharedState() {
+    const state = readSharedState();
+    if (!state) {
+      activateTab(document.querySelector('.tab-btn.active'));
+      return;
+    }
+    if (state.errorKey) {
+      activateTab(document.querySelector('.tab-btn.active'));
+      showSingleWarning(t(state.errorKey));
+      return;
+    }
+
+    activateScheme(state.schemeId);
+    document.getElementById('input-text').value = state.input;
+    if (state.hasInput) {
+      calculate();
+    }
+  }
+
   function renderActionStatus() {
     const status = document.getElementById('action-status');
     if (status) {
       status.textContent = lastActionStatusKey ? t(lastActionStatusKey) : '';
+    }
+  }
+
+  function renderImportStatus() {
+    const status = document.getElementById('import-status');
+    if (status) {
+      status.textContent = lastImportStatusKey ? t(lastImportStatusKey) : '';
     }
   }
 
@@ -651,6 +876,7 @@
     const start = input.selectionStart;
     const end = input.selectionEnd;
     input.setRangeText(text, start, end, 'end');
+    input.dispatchEvent(new Event('input', { bubbles: true }));
     input.focus();
   }
 
@@ -669,13 +895,21 @@
     });
 
     document.getElementById('preset-select').addEventListener('change', event => {
-      if (event.target.value) document.getElementById('input-text').value = event.target.value;
+      if (event.target.value) {
+        const input = document.getElementById('input-text');
+        input.value = event.target.value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
     });
     document.getElementById('calculate-btn').addEventListener('click', calculate);
     document.getElementById('copy-summary').addEventListener('click', copySummary);
     document.getElementById('download-json').addEventListener('click', downloadJson);
-    document.getElementById('input-text').addEventListener('keydown', event => {
-      if (event.key === 'Enter' && !event.shiftKey) {
+    document.getElementById('import-json').addEventListener('change', importJson);
+    document.getElementById('copy-share-url').addEventListener('click', copyShareUrl);
+    const textInput = document.getElementById('input-text');
+    textInput.addEventListener('input', clearResult);
+    textInput.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
         event.preventDefault();
         calculate();
       }
@@ -699,6 +933,7 @@
     document.getElementById('hebrew-clear').addEventListener('click', () => {
       const input = document.getElementById('input-text');
       input.value = '';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
       input.focus();
     });
     document.getElementById('hebrew-backspace').addEventListener('click', () => {
@@ -710,10 +945,11 @@
       } else if (start > 0) {
         input.setRangeText('', start - 1, start, 'end');
       }
+      input.dispatchEvent(new Event('input', { bubbles: true }));
       input.focus();
     });
 
     applyI18n();
-    activateTab(document.querySelector('.tab-btn.active'));
+    restoreSharedState();
   });
 })();

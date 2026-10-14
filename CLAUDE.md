@@ -47,6 +47,13 @@ Gematria CipherLab is an educational gematria calculator supporting multiple cip
 - Export the selected full trace and comparison summaries as deterministic `gematria-cipherlab.analysis` JSON
 - Include scheme IDs and versions in copied and downloaded results
 
+### Breakdown, Import, and Sharing
+- Treat physical lines and whitespace-delimited segments as display groups, not linguistic words
+- Ignore tabs and line breaks as separators rather than reporting them as undefined tokens
+- Restore `formatVersion: 1` JSON only after recomputing the complete package and matching every field
+- Keep input out of share URLs by default; include it only after an explicit checkbox choice
+- Do not place totals or traces in share parameters; recompute them from the shared input and method
+
 ## Development Guidelines
 
 ### Technology Stack
