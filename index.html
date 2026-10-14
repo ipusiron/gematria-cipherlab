@@ -191,7 +191,18 @@
         </div>
       </div>
 
-      <button id="calculate-btn" class="btn-primary" data-i18n="input.calculate">計算</button>
+      <div class="input-actions">
+        <button id="calculate-btn" class="btn-primary" data-i18n="input.calculate">計算</button>
+        <label class="btn-secondary file-trigger" for="import-json">
+          <span data-i18n="import.open">JSONを読み込む</span>
+          <input class="visually-hidden" id="import-json" type="file" accept="application/json,.json">
+        </label>
+      </div>
+      <div class="input-notes">
+        <p class="input-action-note" data-i18n="input.shortcut">Ctrl／⌘＋Enterでも計算できます。Enterだけなら改行します。</p>
+        <p class="input-action-note" data-i18n="import.note">このツールが保存した1MB以下のJSONだけを、再計算して検証します。</p>
+        <p class="action-status import-status" id="import-status" role="status" aria-live="polite"></p>
+      </div>
     </section>
 
     <!-- Warnings -->
@@ -232,6 +243,13 @@
         <div class="excluded-list" id="excluded-list"></div>
       </div>
 
+      <!-- Line and whitespace-segment breakdown -->
+      <div class="trace-step breakdown-step" aria-labelledby="breakdown-title">
+        <h3 id="breakdown-title" data-i18n="breakdown.title">行・空白区切りの内訳</h3>
+        <p class="breakdown-notice" data-i18n="breakdown.notice">改行と空白だけで区切った計算内訳です。言語学的な単語判定ではありません。</p>
+        <div class="breakdown-list" id="breakdown-list" role="list"></div>
+      </div>
+
       <!-- Method Comparison -->
       <div class="trace-step comparison-step" aria-labelledby="comparison-title">
         <h3 id="comparison-title" data-i18n="comparison.title">方式横断比較</h3>
@@ -244,6 +262,16 @@
         <button type="button" class="btn-secondary" id="copy-summary" data-i18n="export.copy">結果をコピー</button>
         <button type="button" class="btn-secondary" id="download-json" data-i18n="export.download">JSONを保存</button>
       </div>
+      <fieldset class="share-controls">
+        <legend data-i18n="share.title">共有URL</legend>
+        <label class="share-option" for="share-include-input">
+          <input id="share-include-input" type="checkbox">
+          <span data-i18n="share.includeInput">入力本文をURLに含める</span>
+        </label>
+        <button type="button" class="btn-secondary" id="copy-share-url" data-i18n="share.copy">共有URLをコピー</button>
+      </fieldset>
+      <p class="share-notice" data-i18n="share.notice">既定では言語と方式だけを共有し、入力本文は含めません。</p>
+      <p class="share-privacy" data-i18n="share.privacy">入力本文を含めたURLは、ブラウザー履歴や共有先に残る可能性があります。</p>
       <p class="action-status" id="action-status" role="status" aria-live="polite"></p>
     </section>
 

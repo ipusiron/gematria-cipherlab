@@ -10,7 +10,7 @@ English · [日本語](README.md)
 
 **Day109 - Security Tools Built with Generative AI 200**
 
-Gematria CipherLab is a browser-only educational tool for examining eight letter-value methods through normalization, tokenization, value assignment, and summation. It automatically compares the same input across methods for the same writing system and can copy or save results with the method ID, version, and calculation trace.
+Gematria CipherLab is a browser-only educational tool for examining eight letter-value methods through normalization, tokenization, value assignment, and summation. It also provides same-writing-system comparison, line and whitespace-segment breakdowns, verified JSON loading, and share URLs that omit input by default.
 
 ## 🌐 Live Demo
 
@@ -20,9 +20,9 @@ No installation is required. Text is processed only in the browser and is not se
 
 ## 📸 Screenshot
 
-![Comparison of Hebrew Standard and the final-values method](assets/en/screenshot.png)
+![Multiline breakdown and comparison of the Hebrew methods](assets/en/screenshot.png)
 
-*Comparing `שלום` as 376 in Hebrew Standard and 936 in Hebrew Final Values*
+*Inspecting multiline input by line and whitespace segment while comparing Hebrew Standard and Final Values*
 
 ## ✨ Features
 
@@ -31,6 +31,9 @@ No installation is required. Text is processed only in the browser and is not se
 - Distinguish included, substituted, excluded, and ignored input
 - Switch an on-screen keyboard between Hebrew Standard and final values from 500 to 900
 - Copy or save reproducible JSON with the method ID, method version, trace, and comparison
+- Recompute saved JSON and restore it only when the total, trace, and comparison match
+- Break multiline input down by physical line and whitespace-delimited segment
+- Share only the language and method, or explicitly opt in to including the input
 - Switch the complete interface between English and Japanese and save the preference
 - Use a mobile-first interface from a width of 320 pixels
 - Run without external libraries, external APIs, or a build process
@@ -42,6 +45,9 @@ No installation is required. Text is processed only in the browser and is not se
 - Compare the treatment of I/J, U/V, HI, HV, and excluded letters in Agrippa 23 and the 27-slot transcription
 - Observe Hebrew ordinary forms, final forms, points, and presentation forms
 - Save versioned JSON so a lesson, article, or manual check carries its calculation conditions
+- Load saved JSON to verify that its total or trace was not rewritten
+- Put `שלום חי` and `אמת` on separate lines to inspect line and whitespace-segment totals
+- Share the selected language and method with a collaborator without placing the input text in the URL
 
 ## 📖 Included Methods
 
@@ -85,15 +91,19 @@ The result is shown in three stages.
 | Excluded | A letter that the selected method does not define |
 | Ignored | Spaces, punctuation, digits, Hebrew points, cantillation marks, and similar separators or marks |
 
-Input is limited to 10,000 characters. English and Latin methods apply NFKC and uppercase conversion; the Hebrew method applies NFKD.
+Input is limited to 10,000 characters. English and Latin methods apply NFKC and uppercase conversion; the Hebrew method applies NFKD. Spaces, tabs, and line breaks are ignored as separators. Enter inserts a line break, while Ctrl/Command+Enter calculates.
 
-After calculation, cards compare every method for the same writing system against the selected reference. Differences are numeric only; equality or proximity is not scored as meaning or confidence. Copy Result produces text with the method name, method ID, method version, trace, and comparison. Save JSON writes the same conditions in the machine-readable `gematria-cipherlab.analysis` format. The JSON omits timestamps so the same input and method reproduce the same file content.
+Below the total, the interface reports the total, included count, and excluded count for each physical line and whitespace-delimited segment. This is not linguistic word segmentation. Cards then compare every method for the same writing system against the selected reference. Differences are numeric only; equality or proximity is not scored as meaning or confidence.
+
+Copy Result includes the method name, method ID, method version, trace, line breakdown, and comparison. Save JSON writes the complete analysis in the machine-readable `gematria-cipherlab.analysis` format. The JSON omits timestamps so the same input and method reproduce the same file content. Load JSON accepts a file of up to 1 MB with `formatVersion: 1`, recomputes it from the input and method, and restores it only when every field matches.
+
+A share URL contains only the interface language and method by default. The input is added only when Include the input text in the URL is selected, and a URL longer than 4,000 characters is rejected. A URL containing input may remain in browser history and at its destination.
 
 ## ⚠️ Limitations of the Result
 
 An equal total does not prove a semantic relationship, prediction, authenticity, or cryptographic security. Results depend on the selected method, spelling, transcription, and Unicode normalization.
 
-This tool is a calculator for checking letter-value correspondences. It does not judge historical or religious interpretations and cannot provide encryption, authentication, or tamper detection.
+This tool is a calculator for checking letter-value correspondences. It does not judge historical or religious interpretations and cannot provide encryption or authentication. Recalculation during JSON loading is an internal consistency check, not a digital signature, author authentication, or third-party proof of tampering. It cannot detect a JSON file regenerated with matching input and results.
 
 ## 🔒 Security and Privacy
 
@@ -102,6 +112,8 @@ This tool is a calculator for checking letter-value correspondences. It does not
 - Declares a CSP including `script-src 'self'` and `connect-src 'none'`
 - Recursively freezes calculation tables and results against runtime mutation
 - Generates copied text and JSON entirely in the browser without sending it to an external service
+- Treats loaded JSON values as untrusted and requires a complete match after recomputation
+- Omits input from share URLs by default and requires an explicit on-screen choice to include it
 - Loads no external libraries
 
 GitHub Pages does not let this repository set HTTP response headers such as `X-Frame-Options`. Because `frame-ancestors` is also ineffective in an HTML CSP meta element, the public page does not guarantee that embedding is blocked.
@@ -110,9 +122,10 @@ GitHub Pages does not let this repository set HTTP response headers such as `X-F
 
 1. Choose English & Latin, Agrippa, or Hebrew.
 2. Select a method when the tab offers more than one.
-3. Enter text or choose a preset.
-4. Select Calculate and inspect the trace, cross-method comparison, and reference table.
-5. Copy the result or save reproducible JSON when needed.
+3. Enter text or choose a preset. Enter can be used for multiline input.
+4. Select Calculate or press Ctrl/Command+Enter, then inspect the trace, line breakdown, cross-method comparison, and reference table.
+5. Copy the result or save reproducible JSON when needed. Load JSON verifies and restores a saved file.
+6. Before copying a share URL, choose whether to include the input. The default URL contains only the language and method.
 
 For local use, open `index.html` directly. You can also serve the directory from a local HTTP server; no build step is required.
 
@@ -124,7 +137,7 @@ With Node.js 22 or later, run the tests without installing dependencies.
 npm test
 ```
 
-The suite covers representative values for all eight methods, Agrippa longest matching and boundaries, Hebrew normalization and final values from 500 to 900, method comparison, the JSON format, data immutability, English/Japanese message parity, and HTML/CSP requirements.
+The suite covers representative values for all eight methods, Agrippa longest matching and boundaries, Hebrew normalization and final values from 500 to 900, tabs and line breaks, line breakdowns, method comparison, JSON recomputation and inconsistent-file rejection, data immutability, English/Japanese message parity, and HTML/CSP requirements.
 
 ## 📁 Directory Structure
 

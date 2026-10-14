@@ -153,7 +153,7 @@
   }
 
   function isSeparator(char) {
-    return /[\p{P}\p{S}\p{Z}\p{N}]/u.test(char);
+    return /[\p{P}\p{S}\p{Z}\p{N}\s]/u.test(char);
   }
 
   function createEntry(original, token, value, index) {
@@ -269,6 +269,41 @@
       .map(scheme => scheme.id);
   }
 
+  function createBreakdown(input, schemeId) {
+    const complete = analyze(input, schemeId);
+    const lines = input.replace(/\r\n?/gu, '\n').split('\n').map((line, lineIndex) => {
+      const lineAnalysis = analyze(line, schemeId);
+      const segments = [...line.matchAll(/\S+/gu)].map((match, segmentIndex) => {
+        const segmentAnalysis = analyze(match[0], schemeId);
+        return {
+          number: segmentIndex + 1,
+          offset: match.index,
+          input: match[0],
+          total: segmentAnalysis.total,
+          tokenCount: segmentAnalysis.tokens.length,
+          excludedCount: segmentAnalysis.excluded.length
+        };
+      });
+
+      return {
+        number: lineIndex + 1,
+        input: line,
+        total: lineAnalysis.total,
+        tokenCount: lineAnalysis.tokens.length,
+        excludedCount: lineAnalysis.excluded.length,
+        segments
+      };
+    });
+
+    return deepFreeze({
+      schemeId: complete.schemeId,
+      schemeVersion: complete.schemeVersion,
+      input,
+      total: complete.total,
+      lines
+    });
+  }
+
   function createAnalysisPackage(input, selectedSchemeId, comparisonSchemeIds) {
     const selected = analyze(input, selectedSchemeId);
     const selectedFamily = SCHEMES[selectedSchemeId].family;
@@ -311,6 +346,74 @@
     });
   }
 
+  function isPlainObject(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      return false;
+    }
+    const prototype = Object.getPrototypeOf(value);
+    return prototype === Object.prototype || prototype === null;
+  }
+
+  function structurallyEqual(left, right) {
+    if (Object.is(left, right)) {
+      return true;
+    }
+    if (Array.isArray(left) || Array.isArray(right)) {
+      return Array.isArray(left) && Array.isArray(right) &&
+        left.length === right.length &&
+        left.every((item, index) => structurallyEqual(item, right[index]));
+    }
+    if (!isPlainObject(left) || !isPlainObject(right)) {
+      return false;
+    }
+
+    const leftKeys = Object.keys(left).sort();
+    const rightKeys = Object.keys(right).sort();
+    return leftKeys.length === rightKeys.length &&
+      leftKeys.every((key, index) => (
+        key === rightKeys[index] && structurallyEqual(left[key], right[key])
+      ));
+  }
+
+  function restoreAnalysisPackage(value) {
+    if (!isPlainObject(value)) {
+      throw new TypeError('analysis-package-invalid');
+    }
+    if (value.format !== EXPORT_FORMAT) {
+      throw new RangeError('analysis-format-unsupported');
+    }
+    if (value.formatVersion !== EXPORT_FORMAT_VERSION) {
+      throw new RangeError('analysis-version-unsupported');
+    }
+    if (
+      !isPlainObject(value.selected) ||
+      typeof value.selected.input !== 'string' ||
+      typeof value.selected.schemeId !== 'string' ||
+      !Array.isArray(value.comparisons) ||
+      value.comparisons.some(comparison => (
+        !isPlainObject(comparison) || typeof comparison.schemeId !== 'string'
+      ))
+    ) {
+      throw new TypeError('analysis-package-invalid');
+    }
+
+    let restored;
+    try {
+      restored = createAnalysisPackage(
+        value.selected.input,
+        value.selected.schemeId,
+        value.comparisons.map(comparison => comparison.schemeId)
+      );
+    } catch (_error) {
+      throw new TypeError('analysis-package-invalid');
+    }
+
+    if (!structurallyEqual(value, restored)) {
+      throw new Error('analysis-package-integrity-failed');
+    }
+    return restored;
+  }
+
   deepFreeze(SCHEMES);
 
   return deepFreeze({
@@ -321,7 +424,9 @@
     SCHEMES,
     analyze,
     getComparableSchemeIds,
+    createBreakdown,
     createAnalysisPackage,
+    restoreAnalysisPackage,
     isHebrewMark
   });
 });

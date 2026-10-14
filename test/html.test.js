@@ -59,6 +59,15 @@ test('Hebrew methods, comparison, and versioned export controls are present', ()
   assert.match(html, /id="action-status"[^>]+aria-live="polite"/u);
 });
 
+test('verified JSON import, breakdown, and privacy-preserving share controls are present', () => {
+  assert.match(html, /id="import-json"[^>]+type="file"[^>]+accept="application\/json,\.json"/u);
+  assert.match(html, /id="import-status"[^>]+aria-live="polite"/u);
+  assert.match(html, /id="breakdown-list"[^>]+role="list"/u);
+  assert.match(html, /id="share-include-input"[^>]+type="checkbox"/u);
+  assert.match(html, /id="copy-share-url"/u);
+  assert.match(html, /data-i18n="share\.privacy"/u);
+});
+
 test('long normalization notes wrap without widening the page', () => {
   assert.match(css, /\.analysis-note\s*\{[^}]*overflow-wrap:\s*anywhere;/su);
 });
