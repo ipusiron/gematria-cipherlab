@@ -185,6 +185,7 @@ gematria-cipherlab/
 ├── assets/
 │   ├── en/
 │   │   └── screenshot.png    # 英語画面のスクリーンショット
+│   ├── favicon.svg           # ファビコン
 │   └── screenshot.png        # 日本語画面のスクリーンショット
 ├── docs/
 │   ├── detailed_design.md    # 計算コアとデータ処理の設計
