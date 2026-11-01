@@ -149,6 +149,7 @@ gematria-cipherlab/
 ├── assets/
 │   ├── en/
 │   │   └── screenshot.png    # English interface screenshot
+│   ├── favicon.svg           # Favicon
 │   └── screenshot.png        # Japanese interface screenshot
 ├── docs/
 │   ├── detailed_design.md    # Calculation core and data-processing design
